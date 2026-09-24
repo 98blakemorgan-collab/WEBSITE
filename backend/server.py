@@ -67,9 +67,10 @@ def create_access_token(user_id: str, email: str, role: str) -> str:
 
 
 def set_auth_cookie(response: Response, token: str):
+    # samesite="none" + secure matches the deployed cookie (Emergent proxy enforces this).
     response.set_cookie(
         key="access_token", value=token, httponly=True, secure=True,
-        samesite="lax", max_age=7 * 24 * 3600, path="/",
+        samesite="none", max_age=7 * 24 * 3600, path="/",
     )
 
 

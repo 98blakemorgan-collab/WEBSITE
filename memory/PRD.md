@@ -26,6 +26,13 @@ Turn Plantagenetplayers.site into a full functional small theatre management sys
 - Member (cast/crew/FOH): portal with tickets + membership status
 - Admin/committee: full dashboard (shows, members, sales, bulk email, lighting assets)
 
+## Code-quality / security pass (2026-06, verified iteration_4 100%)
+- **Auth hardened**: migrated from localStorage JWT to secure **httpOnly cookies** (same-origin). Backend sets/clears cookie on login/register/logout; `get_current_user` keeps Bearer fallback. Frontend axios `withCredentials`, AuthContext checks `/auth/me` on mount — no token in localStorage. 45/45 backend + 100% frontend tests pass.
+- PaymentSuccess: replaced empty catch with retry logging
+- ShowDetail: stable React keys on cast/crew/performances lists
+- backend_test.py: credentials read from env vars (no hardcoded secrets)
+- Reviewer items intentionally NOT changed: `server.py` `is not None` (correct idiom, not an anti-pattern); `craco.config.js` console.warn (dev-only platform tooling, never in prod build); large-component/`server.py` splits (out of scope, regression risk on a working app)
+
 ## Implemented — latest batch (2026-06, verified iteration_3 100%)
 - Show Archive page (/archive): past shows listed WITHOUT dates; click opens detail w/ cast/crew
 - Home: dynamic featured/next show section + hero slideshow

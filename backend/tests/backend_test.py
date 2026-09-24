@@ -22,21 +22,32 @@ MEMBER_PASSWORD = os.environ.get("TEST_MEMBER_PASSWORD", "Member123!")
 CONTENT_KEYS = ["home", "story", "membership", "contact", "sponsors"]
 
 
+class _NoCookieSession(requests.Session):
+    """Session that never stores or resends cookies — forces Bearer-only auth
+    so tests remain deterministic after the httpOnly cookie migration."""
+    def send(self, request, **kwargs):
+        resp = super().send(request, **kwargs)
+        self.cookies.clear()
+        return resp
+
+
 @pytest.fixture(scope="session")
 def s():
-    return requests.Session()
+    sess = _NoCookieSession()
+    return sess
 
 
 @pytest.fixture(scope="session")
-def admin_token(s):
-    r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+def admin_token():
+    # Use an isolated one-shot session so login cookies don't leak.
+    r = requests.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert r.status_code == 200, r.text
     return r.json()["token"]
 
 
 @pytest.fixture(scope="session")
-def member_token(s):
-    r = s.post(f"{API}/auth/login", json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD})
+def member_token():
+    r = requests.post(f"{API}/auth/login", json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD})
     assert r.status_code == 200, r.text
     return r.json()["token"]
 
@@ -368,3 +379,83 @@ class TestMarketingCampaign:
         data = r.json()
         assert data["audience"] == "marketing"
         assert data["status"] == "sent"
+
+
+# --- Cookie-based auth migration -----------------------------------------
+class TestCookieAuth:
+    """Verify httpOnly cookie login/logout flow works."""
+
+    def test_login_sets_httponly_cookie(self):
+        sess = requests.Session()
+        r = sess.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+        assert r.status_code == 200
+        # cookie should be present in jar
+        assert "access_token" in sess.cookies
+        # /auth/me should work with just the cookie (no Authorization header)
+        me = sess.get(f"{API}/auth/me")
+        assert me.status_code == 200
+        assert me.json()["role"] == "admin"
+
+    def test_logout_clears_cookie(self):
+        sess = requests.Session()
+        r = sess.post(f"{API}/auth/login", json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD})
+        assert r.status_code == 200
+        assert sess.get(f"{API}/auth/me").status_code == 200
+        out = sess.post(f"{API}/auth/logout")
+        assert out.status_code == 200
+        # after logout cookie is cleared -> /auth/me should be 401
+        assert sess.get(f"{API}/auth/me").status_code == 401
+
+    def test_admin_cookie_authorizes_content_update(self):
+        sess = requests.Session()
+        r = sess.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+        assert r.status_code == 200
+        original = sess.get(f"{API}/content/membership").json()
+        try:
+            modified = copy.deepcopy(original)
+            modified["title"] = f"TEST_COOKIE_{uuid.uuid4().hex[:6]}"
+            u = sess.put(f"{API}/admin/content/membership", json={"data": modified})
+            assert u.status_code == 200
+            assert u.json()["data"]["title"] == modified["title"]
+        finally:
+            sess.put(f"{API}/admin/content/membership", json={"data": original})
+
+    def test_member_cookie_cannot_access_admin(self):
+        sess = requests.Session()
+        r = sess.post(f"{API}/auth/login", json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD})
+        assert r.status_code == 200
+        assert sess.get(f"{API}/admin/stats").status_code == 403
+
+    def test_bearer_fallback_still_works(self, admin_token):
+        # No cookies — pure Bearer must still authenticate
+        r = requests.get(f"{API}/admin/stats", headers={"Authorization": f"Bearer {admin_token}"})
+        assert r.status_code == 200
+
+    def test_guest_checkout_no_cookie(self):
+        # Fresh session (no cookies) should still let guest checkout succeed
+        sess = requests.Session()
+        shows = sess.get(f"{API}/shows").json()
+        show = next(x for x in shows if x["ticket_tiers"])
+        tier = show["ticket_tiers"][0]
+        r = sess.post(f"{API}/payments/checkout", json={
+            "show_id": show["id"], "tier_name": tier["name"],
+            "quantity": 1, "origin_url": BASE_URL,
+            "buyer_name": "TEST Guest", "buyer_email": f"test_guest_{uuid.uuid4().hex[:6]}@example.com",
+            "marketing_opt_in": False,
+        })
+        assert r.status_code == 200
+        assert "stripe.com" in r.json()["checkout_url"]
+
+    def test_logged_in_checkout_uses_cookie_user(self):
+        sess = requests.Session()
+        r = sess.post(f"{API}/auth/login", json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD})
+        assert r.status_code == 200
+        shows = sess.get(f"{API}/shows").json()
+        show = next(x for x in shows if x["ticket_tiers"])
+        tier = show["ticket_tiers"][0]
+        r = sess.post(f"{API}/payments/checkout", json={
+            "show_id": show["id"], "tier_name": tier["name"],
+            "quantity": 1, "origin_url": BASE_URL,
+        })
+        assert r.status_code == 200
+        assert "stripe.com" in r.json()["checkout_url"]
