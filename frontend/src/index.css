@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background: 20 20% 5%;
+    --foreground: 40 30% 96%;
+    --card: 340 12% 9%;
+    --card-foreground: 40 30% 96%;
+    --popover: 340 14% 8%;
+    --popover-foreground: 40 30% 96%;
+    --primary: 356 64% 33%;
+    --primary-foreground: 40 60% 96%;
+    --secondary: 46 65% 52%;
+    --secondary-foreground: 20 30% 8%;
+    --muted: 340 8% 16%;
+    --muted-foreground: 40 8% 65%;
+    --accent: 46 65% 52%;
+    --accent-foreground: 20 30% 8%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 40 30% 96%;
+    --border: 46 40% 55% / 0.18;
+    --input: 340 10% 18%;
+    --ring: 46 65% 52%;
+    --radius: 0.5rem;
+    --chart-1: 356 64% 45%;
+    --chart-2: 46 65% 52%;
+    --chart-3: 40 60% 70%;
+    --chart-4: 20 40% 40%;
+    --chart-5: 200 40% 50%;
+}
+
+* {
+    border-color: hsl(46 40% 55% / 0.18);
+}
+
+body {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #0D0A0B;
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+.font-serif { font-family: 'Playfair Display', Georgia, serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+.eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    color: hsl(46 65% 58%);
+}
+
+/* velvet texture / grain */
+.grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.gold-hairline {
+    background: linear-gradient(90deg, transparent, hsl(46 65% 52% / 0.5), transparent);
+    height: 1px;
+}
+
+::selection {
+    background: hsl(356 64% 40%);
+    color: #fdf6e3;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0D0A0B; }
+::-webkit-scrollbar-thumb { background: hsl(340 10% 22%); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(46 40% 40%); }
+
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes curtain-glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+}
+.animate-glow { animation: curtain-glow 5s ease-in-out infinite; }

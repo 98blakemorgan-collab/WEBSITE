@@ -1,0 +1,139 @@
+{
+  "project_title": "Plantagenet Players Theatre Management & Website",
+  "brand_identity": {
+    "name": "Plantagenet Players",
+    "location": "Mount Barker, Great Southern, Western Australia",
+    "established": 1953,
+    "tagline": "Stories begin here.",
+    "ethos": "A warm, welcoming community theatre operating for over 70 years. Come for the show — stay for the people, the laughter, and the magic behind the curtain.",
+    "theme_archetype": "ARCHETYPE 5: LUXURY & VINTAGE THEATRE VELVET (Warm Crimson, Gold Brass, Deep Charcoal Obsidian, Cream Warm Neutral)"
+  },
+  "typography": {
+    "heading_font": "Playfair Display / Cormorant Garamond",
+    "heading_font_classes": "font-serif tracking-tight",
+    "body_font": "Plus Jakarta Sans / Inter",
+    "body_font_classes": "font-sans leading-relaxed",
+    "accent_font": "JetBrains Mono (for technical lighting inventory, ticket codes, DMX addresses)",
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-amber-50 dark:text-amber-100",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-serif font-semibold tracking-tight text-amber-100 dark:text-amber-200",
+      "h3": "text-xl sm:text-2xl font-serif font-medium text-amber-200/90 dark:text-amber-200/90",
+      "h4": "text-lg sm:text-xl font-sans font-semibold text-slate-100 dark:text-slate-100",
+      "body": "text-sm sm:text-base font-sans text-slate-300 leading-relaxed",
+      "caption": "text-xs font-mono tracking-wider uppercase text-amber-400/80"
+    }
+  },
+  "colors": {
+    "palette_name": "Velvet & Spotlight Warm Accent",
+    "primary": {
+      "main": "#8B1E26",
+      "hover": "#A6242F",
+      "active": "#6F151C",
+      "tailwind_equivalent": "bg-[#8B1E26] hover:bg-[#A6242F] text-amber-50"
+    },
+    "secondary": {
+      "main": "#D4AF37",
+      "hover": "#E5C158",
+      "tailwind_equivalent": "bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950"
+    },
+    "background": {
+      "dark_theme": "#0D0A0B",
+      "surface_card": "#181316",
+      "surface_elevated": "#241D21",
+      "light_theme": "#FAF7F2"
+    },
+    "accents": {
+      "spotlight_amber": "#FFB800",
+      "stage_curtain_red": "#9B1C22",
+      "brass_border": "rgba(212, 175, 55, 0.25)",
+      "muted_text": "#A399A2"
+    }
+  },
+  "layout_and_spacing": {
+    "container_max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "section_padding": "py-16 sm:py-24",
+    "grid_strategies": {
+      "shows_grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
+      "hero_layout": "relative min-h-[85vh] flex items-center justify-center overflow-hidden py-20",
+      "bento_features": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "dashboard_grid": "grid grid-cols-1 lg:grid-cols-4 gap-6"
+    }
+  },
+  "image_urls": {
+    "hero_stage_background": {
+      "url": "https://images.unsplash.com/photo-1503095396549-807759245b35?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHx0aGVhdGVyJTIwcGVyZm9ybWFuY2UlMjBzdGFnZSUyMGFjdG9ycyUyMGRyYW1hJTIwc3BvdGxpZ2h0fGVufDB8fHx8MTc5MDI3NDAzN3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Dramatic silhouettes on stage under crimson curtain lighting",
+      "usage": "Hero section background overlay with gradient scrim"
+    },
+    "show_drama_performance": {
+      "url": "https://images.pexels.com/photos/6896323/pexels-photo-6896323.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Two actors in dramatic spotlight scene",
+      "usage": "Current/Upcoming featured theatrical production show poster"
+    },
+    "show_musical_comedy": {
+      "url": "https://images.unsplash.com/photo-1630050525402-06c617847d27?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHw0fHx0aGVhdGVyJTIwcGVyZm9ybWFuY2UlMjBzdGFnZSUyMGFjdG9ycyUyMGRyYW1hJTIwc3BvdGxpZ2h0fGVufDB8fHx8MTc5MDI3NDAzN3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Cast ensemble performance under stage lights",
+      "usage": "Variety show or musical production card"
+    },
+    "show_melodrama": {
+      "url": "https://images.unsplash.com/photo-1558970439-add78fc68990?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHszfHx0aGVhdGVyJTIwcGVyZm9ybWFuY2UlMjBzdGFnZSUyMGFjdG9ycyUyMGRyYW1hJTIwc3BvdGxpZ2h0fGVufDB8fHx8MTc5MDI3NDAzN3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Stage set under blue atmospheric spotlights",
+      "usage": "Classic melodrama / community play feature poster"
+    },
+    "lighting_fixtures_hero": {
+      "url": "https://images.pexels.com/photos/7709689/pexels-photo-7709689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Professional stage lighting rig and fixtures setup in theatre",
+      "usage": "Admin lighting fixture asset inventory header and technical page"
+    },
+    "lighting_spotlight_fixture": {
+      "url": "https://images.unsplash.com/photo-1621873493371-9aea49f66b9b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwxfHxzdGFnZSUyMGxpZ2h0aW5nJTIwc3BvdGxpZ2h0JTIwdGhlYXRlciUyMGZpeHR1cmVzJTIwYmFja3N0YWdlfGVufDB8fHx8MTc5MDI3NDAzN3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Spotlight fixture beaming warm light on stage",
+      "usage": "Technical equipment detail cards and lighting rig inventory"
+    },
+    "backstage_atmosphere": {
+      "url": "https://images.pexels.com/photos/12092991/pexels-photo-12092991.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Moody stage lighting with atmospheric smoke effect",
+      "usage": "Backstage / Find Your Part section background"
+    }
+  },
+  "key_features_and_components": {
+    "public_website": [
+      "Navigation Bar with Logo, links ('What\\'s On', 'Our Story', 'Membership', 'Sponsors', 'Contact'), Login/Register, and 'Book Tickets' primary action",
+      "Hero Section with 70+ year heritage banner ('Mount Barker\\'s Community Theatre since 1953'), theatrical typography, and quick ticket search",
+      "What's On Section: Filters for Upcoming, Current, Past Productions with show dates, venue info (Plantagenet Hall), seat availability indicator, and Stripe ticket modal",
+      "Our Story Section: Timeline celebrating 70+ years of local Australian theatre, melodrama, satire, and community spirit",
+      "Find Your Part (Membership Info): Tabs for On Stage, Backstage, Technical, Front of House with membership tier benefits and online sign-up flow",
+      "Sponsor & Community Partner showcase",
+      "Interactive Footer with location map info, box office contact, social links, and admin access link"
+    ],
+    "ticket_sales_stripe": [
+      "Interactive Seat / Section Selection (Stalls, Circle, VIP Table)",
+      "Stripe Checkout Integration (mock / direct sandbox modal with ticket receipt generation)",
+      "Digital Ticket issuance with QR code and printable PDF option in Member Portal"
+    ],
+    "member_portal": [
+      "User authentication state (Patron / Cast / Crew / Admin)",
+      "My Tickets tab (view upcoming show passes, QR codes, download tickets)",
+      "My Membership tab (Active status, renewal date, membership tier badge)",
+      "Audition & Backstage Roster noticeboard for local members"
+    ],
+    "admin_dashboard": [
+      "Overview KPIs: Total Ticket Revenue, Active Members, Upcoming Shows, Lighting Fixtures in Service",
+      "Show Management: CRUD interface for creating shows, managing showtimes, setting ticket prices, uploading posters",
+      "Member Management: Filterable roster of members, membership status, roles (On Stage, Tech, FOH), payment status",
+      "Bulk Email Composer: Rich UI for sending announcements, newsletters, and show calls to member groups with templates and preview",
+      "Lighting Fixture Asset Inventory: Dedicated technical equipment asset manager tracking fixture type (Fresnel, Profile, PAR, LED Wash, Moving Head), DMX channels, lamp hours, maintenance status, rig location (FOH Bar 1, Bridge, LX 1, LX 2), and spec sheets"
+    ]
+  },
+  "testing_and_accessibility": {
+    "data_testid_policy": "All interactive elements (buttons, inputs, links, tabs, tables, modals) MUST include data-testid attributes formatted in kebab-case, e.g. data-testid='buy-tickets-button', data-testid='lighting-asset-table', data-testid='bulk-email-subject-input'",
+    "contrast_and_accessibility": "Ensure high contrast on dark velvet background using amber/gold and bright white text. All form fields must have clear labels and keyboard focus rings."
+  },
+  "instructions_to_main_agent": [
+    "Build a cohesive React web application supporting both the public theatre site and the admin/member portals.",
+    "Use Playfair Display/serif styling for headlines and warm amber accents to evoke classic theatre elegance.",
+    "Ensure the Lighting Fixture Asset Info section in the Admin Panel is detailed and fully featured (DMX addresses, fixture status, maintenance logs, power ratings, location on grid).",
+    "Provide seed data for 70+ years history, current shows (e.g. 'Mount Barker Melodrama', 'The Great Southern Satire', 'Spring Variety Show'), and lighting equipment (e.g. ETC Source Four, Chauvet Maverick, Selecon Fresnel).",
+    "Ensure data-testid attributes exist across all key UI elements."
+  ]
+}
