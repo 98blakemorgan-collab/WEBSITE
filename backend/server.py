@@ -684,7 +684,8 @@ async def seed():
     for title, url in poster_map.items():
         await db.shows.update_one(
             {"title": title},
-            {"$set": {"poster_url": url, "venue": "Plantagenet District Hall, Memorial Drive, Mount Barker"}},
+            {"$set": {"poster_url": url, "venue": "Plantagenet District Hall, Memorial Drive, Mount Barker",
+                      "status": "past", "performances": []}},
         )
 
     # Lighting fixtures

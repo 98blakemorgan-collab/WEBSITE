@@ -62,7 +62,7 @@ export default function Home() {
             <div className="relative rounded-2xl overflow-hidden border border-[#D4AF37]/20 group">
               <img src={featured.poster_url} alt={featured.title} className="w-full h-[420px] object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#8B1E26] text-amber-50 text-xs font-mono tracking-wider uppercase">
-                {featured.status === "current" ? "Now Showing" : "Next Production"}
+                {featured.status === "current" ? "Now Showing" : featured.status === "upcoming" ? "Next Production" : "From the Archive"}
               </div>
             </div>
             <div>
@@ -72,7 +72,7 @@ export default function Home() {
               <p className="mt-6 text-amber-50/70 leading-relaxed">{featured.description}</p>
               <div className="mt-8">
                 <Button asChild size="lg" className="rounded-full bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-semibold px-8" data-testid="home-featured-book-btn">
-                  <Link to={`/shows/${featured.id}`}>Book Tickets <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                  <Link to={`/shows/${featured.id}`}>{featured.status === "past" ? "View Production" : "Book Tickets"} <ArrowRight className="w-4 h-4 ml-2" /></Link>
                 </Button>
               </div>
             </div>

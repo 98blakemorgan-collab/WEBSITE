@@ -73,9 +73,13 @@ export default function ShowDetail() {
           <div className="mt-10 grid sm:grid-cols-2 gap-6">
             <div className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15">
               <h3 className="font-mono text-xs uppercase tracking-widest text-[#D4AF37]/70 mb-4 flex items-center gap-2"><Calendar className="w-4 h-4" /> Performances</h3>
-              <ul className="space-y-2 text-sm text-amber-50/80">
-                {show.performances?.map((p, i) => <li key={i} className="font-mono">{fmtDateTime(p)}</li>)}
-              </ul>
+              {show.performances?.length ? (
+                <ul className="space-y-2 text-sm text-amber-50/80">
+                  {show.performances.map((p, i) => <li key={i} className="font-mono">{fmtDateTime(p)}</li>)}
+                </ul>
+              ) : (
+                <p className="text-sm text-amber-50/50">Past production — season closed.</p>
+              )}
             </div>
             <div className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15">
               <h3 className="font-mono text-xs uppercase tracking-widest text-[#D4AF37]/70 mb-4 flex items-center gap-2"><MapPin className="w-4 h-4" /> Venue</h3>
