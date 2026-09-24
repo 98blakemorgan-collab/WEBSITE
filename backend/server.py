@@ -66,6 +66,13 @@ def create_access_token(user_id: str, email: str, role: str) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
+def set_auth_cookie(response: Response, token: str):
+    response.set_cookie(
+        key="access_token", value=token, httponly=True, secure=True,
+        samesite="lax", max_age=7 * 24 * 3600, path="/",
+    )
+
+
 def public_user(u: dict) -> dict:
     return {
         "id": u["id"], "email": u["email"], "name": u.get("name", ""),
@@ -191,7 +198,7 @@ class CampaignIn(BaseModel):
 # Auth routes
 # ---------------------------------------------------------------------------
 @api.post("/auth/register")
-async def register(data: RegisterIn):
+async def register(data: RegisterIn, response: Response):
     email = data.email.lower().strip()
     if await db.users.find_one({"email": email}):
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -203,16 +210,18 @@ async def register(data: RegisterIn):
     }
     await db.users.insert_one(user)
     token = create_access_token(user["id"], email, "member")
+    set_auth_cookie(response, token)
     return {"token": token, "user": public_user(user)}
 
 
 @api.post("/auth/login")
-async def login(data: LoginIn):
+async def login(data: LoginIn, response: Response):
     email = data.email.lower().strip()
     user = await db.users.find_one({"email": email}, {"_id": 0})
     if not user or not verify_password(data.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     token = create_access_token(user["id"], email, user.get("role", "member"))
+    set_auth_cookie(response, token)
     return {"token": token, "user": public_user(user)}
 
 
@@ -223,7 +232,7 @@ async def me(user: dict = Depends(get_current_user)):
 
 @api.post("/auth/logout")
 async def logout(response: Response):
-    response.delete_cookie("access_token")
+    response.delete_cookie("access_token", path="/")
     return {"ok": True}
 
 

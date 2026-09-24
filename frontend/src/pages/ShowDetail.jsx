@@ -86,7 +86,7 @@ export default function ShowDetail() {
               <h3 className="font-mono text-xs uppercase tracking-widest text-[#D4AF37]/70 mb-4 flex items-center gap-2"><Calendar className="w-4 h-4" /> Performances</h3>
               {show.performances?.length ? (
                 <ul className="space-y-2 text-sm text-amber-50/80">
-                  {show.performances.map((p, i) => <li key={i} className="font-mono">{fmtDateTime(p)}</li>)}
+                  {show.performances.map((p) => <li key={p} className="font-mono">{fmtDateTime(p)}</li>)}
                 </ul>
               ) : (
                 <p className="text-sm text-amber-50/50">Past production — season closed.</p>
@@ -109,8 +109,8 @@ export default function ShowDetail() {
                   <div data-testid="cast-list">
                     <h3 className="font-serif text-xl text-amber-50 mb-3">Cast</h3>
                     <ul className="space-y-2">
-                      {show.cast.map((c, i) => (
-                        <li key={i} className="flex justify-between gap-4 text-sm border-b border-[#D4AF37]/10 pb-2">
+                      {show.cast.map((c) => (
+                        <li key={`${c.actor}-${c.role}`} className="flex justify-between gap-4 text-sm border-b border-[#D4AF37]/10 pb-2">
                           <span className="text-amber-50">{c.actor}</span>
                           <span className="text-amber-50/50 italic text-right">{c.role}</span>
                         </li>
@@ -122,8 +122,8 @@ export default function ShowDetail() {
                   <div data-testid="crew-list">
                     <h3 className="font-serif text-xl text-amber-50 mb-3">Creative &amp; Crew</h3>
                     <ul className="space-y-2">
-                      {show.crew.map((c, i) => (
-                        <li key={i} className="flex justify-between gap-4 text-sm border-b border-[#D4AF37]/10 pb-2">
+                      {show.crew.map((c) => (
+                        <li key={`${c.role}-${c.name}`} className="flex justify-between gap-4 text-sm border-b border-[#D4AF37]/10 pb-2">
                           <span className="text-amber-50/50 italic">{c.role}</span>
                           <span className="text-amber-50 text-right">{c.name}</span>
                         </li>

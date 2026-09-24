@@ -5,38 +5,32 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null); // null = loading, false = anon, obj = user
-  const token = localStorage.getItem("pp_token");
 
   useEffect(() => {
-    if (!token) {
-      setUser(false);
-      return;
-    }
     api
       .get("/auth/me")
       .then((res) => setUser(res.data))
-      .catch(() => {
-        localStorage.removeItem("pp_token");
-        setUser(false);
-      });
-  }, [token]);
+      .catch(() => setUser(false));
+  }, []);
 
   const login = async (email, password) => {
     const { data } = await api.post("/auth/login", { email, password });
-    localStorage.setItem("pp_token", data.token);
     setUser(data.user);
     return data.user;
   };
 
   const register = async (payload) => {
     const { data } = await api.post("/auth/register", payload);
-    localStorage.setItem("pp_token", data.token);
     setUser(data.user);
     return data.user;
   };
 
-  const logout = () => {
-    localStorage.removeItem("pp_token");
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      /* ignore network errors on logout */
+    }
     setUser(false);
   };
 

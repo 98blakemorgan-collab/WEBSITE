@@ -14,10 +14,10 @@ if _fe_env.exists() and not os.environ.get("REACT_APP_BACKEND_URL"):
 BASE_URL = os.environ["REACT_APP_BACKEND_URL"].rstrip("/")
 API = f"{BASE_URL}/api"
 
-ADMIN_EMAIL = "7yg268b5cs@privaterelay.appleid.com"
-ADMIN_PASSWORD = "Plantagenet1953!"
-MEMBER_EMAIL = "member@plantagenetplayers.site"
-MEMBER_PASSWORD = "Member123!"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "7yg268b5cs@privaterelay.appleid.com")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Plantagenet1953!")
+MEMBER_EMAIL = os.environ.get("TEST_MEMBER_EMAIL", "member@plantagenetplayers.site")
+MEMBER_PASSWORD = os.environ.get("TEST_MEMBER_PASSWORD", "Member123!")
 
 CONTENT_KEYS = ["home", "story", "membership", "contact", "sponsors"]
 
