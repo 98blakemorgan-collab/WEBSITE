@@ -245,5 +245,126 @@ class TestCampaigns:
 # --- admin authz sweep ---------------------------------------------------
 class TestAdminAuthz:
     def test_member_cannot_access_admin_endpoints(self, s, member_token):
-        for path in ("/admin/stats", "/admin/members", "/admin/tickets", "/admin/transactions", "/admin/campaigns"):
+        for path in ("/admin/stats", "/admin/members", "/admin/tickets", "/admin/transactions",
+                     "/admin/campaigns", "/admin/media", "/admin/contacts"):
             assert s.get(f"{API}{path}", headers=H(member_token)).status_code == 403, path
+
+    def test_anon_cannot_access_admin_endpoints(self, s):
+        for path in ("/admin/stats", "/admin/media", "/admin/contacts"):
+            assert s.get(f"{API}{path}").status_code == 401, path
+
+
+# --- Archive (past shows without dates) ----------------------------------
+class TestArchive:
+    def test_archive_past_shows(self, s):
+        r = s.get(f"{API}/shows", params={"status": "past"})
+        assert r.status_code == 200
+        shows = r.json()
+        assert len(shows) >= 1
+        # All 4 seeded shows should be past by design
+        assert len(shows) >= 4
+        for sh in shows:
+            assert sh["status"] == "past"
+            # cast/crew present for detail view
+            assert "cast" in sh
+            assert "crew" in sh
+
+
+# --- Media Library -------------------------------------------------------
+class TestMedia:
+    def test_list_media_admin(self, s, admin_token):
+        r = s.get(f"{API}/admin/media", headers=H(admin_token))
+        assert r.status_code == 200
+        data = r.json()
+        assert "photos" in data
+        assert isinstance(data["photos"], list)
+        assert len(data["photos"]) >= 1
+
+    def test_upload_and_retrieve_image(self, s, admin_token):
+        # 1x1 PNG bytes
+        png = (b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+               b"\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc\xf8"
+               b"\xcf\xc0\x00\x00\x00\x03\x00\x01\xe2\x21\xbc\x33\x00\x00\x00\x00IEND\xaeB`\x82")
+        files = {"file": ("TEST_upload.png", png, "image/png")}
+        r = requests.post(f"{API}/admin/upload", headers=H(admin_token), files=files)
+        assert r.status_code == 200, r.text
+        path = r.json()["path"]
+        assert path.startswith("/api/uploads/")
+        uid = path.split("/api/uploads/")[1]
+
+        # Verify it appears in media list
+        media = s.get(f"{API}/admin/media", headers=H(admin_token)).json()
+        assert path in media["photos"]
+
+        # Retrieve the image publicly
+        g = requests.get(f"{BASE_URL}{path}")
+        assert g.status_code == 200
+        assert g.headers.get("content-type", "").startswith("image/")
+
+        # Cleanup
+        d = s.delete(f"{API}/admin/uploads/{uid}", headers=H(admin_token))
+        assert d.status_code == 200
+
+    def test_upload_requires_admin(self, s, member_token):
+        files = {"file": ("x.png", b"abc", "image/png")}
+        r = requests.post(f"{API}/admin/upload", headers=H(member_token), files=files)
+        assert r.status_code == 403
+
+
+# --- Guest checkout with marketing opt-in --------------------------------
+class TestGuestCheckoutMarketing:
+    def test_guest_checkout_stores_marketing_optin(self, s, admin_token):
+        shows = s.get(f"{API}/shows").json()
+        show = next(x for x in shows if x["ticket_tiers"])
+        tier = show["ticket_tiers"][0]
+        test_email = f"test_optin_{uuid.uuid4().hex[:6]}@example.com"
+        r = s.post(f"{API}/payments/checkout", json={
+            "show_id": show["id"], "tier_name": tier["name"],
+            "quantity": 1, "origin_url": BASE_URL,
+            "buyer_name": "TEST Guest", "buyer_email": test_email,
+            "marketing_opt_in": True,
+        })
+        assert r.status_code == 200, r.text
+        assert "checkout.stripe.com" in r.json()["checkout_url"] or "stripe.com" in r.json()["checkout_url"]
+
+        # Verify the marketing contact was recorded
+        contacts = s.get(f"{API}/admin/contacts", headers=H(admin_token)).json()
+        emails = [c["email"] for c in contacts]
+        assert test_email in emails, f"Marketing opt-in email {test_email} not recorded"
+        contact = next(c for c in contacts if c["email"] == test_email)
+        assert contact["opt_in"] is True
+        assert contact["source"] == "ticket_purchase"
+
+
+# --- Content: documents key for Our Story --------------------------------
+class TestDocumentsContent:
+    def test_documents_key_exists(self, s):
+        r = s.get(f"{API}/content/documents")
+        assert r.status_code == 200
+        data = r.json()
+        assert "constitution_url" in data
+        assert "agm_url" in data
+
+    def test_documents_editable_by_admin(self, s, admin_token):
+        original = s.get(f"{API}/content/documents").json()
+        try:
+            modified = {"constitution_url": "https://example.com/constitution.pdf",
+                        "agm_url": "https://example.com/agm.pdf"}
+            u = s.put(f"{API}/admin/content/documents", headers=H(admin_token), json={"data": modified})
+            assert u.status_code == 200
+            g = s.get(f"{API}/content/documents").json()
+            assert g["constitution_url"] == modified["constitution_url"]
+            assert g["agm_url"] == modified["agm_url"]
+        finally:
+            s.put(f"{API}/admin/content/documents", headers=H(admin_token), json={"data": original})
+
+
+# --- Marketing audience campaign -----------------------------------------
+class TestMarketingCampaign:
+    def test_marketing_audience_campaign(self, s, admin_token):
+        r = s.post(f"{API}/admin/campaigns", headers=H(admin_token),
+                   json={"subject": "TEST_Marketing", "body": "hi", "audience": "marketing"})
+        assert r.status_code == 200
+        data = r.json()
+        assert data["audience"] == "marketing"
+        assert data["status"] == "sent"

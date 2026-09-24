@@ -1,0 +1,34 @@
+{
+  "summary": "Iteration 3 tested the NEW batch: Archive page, Home upcoming/featured show, Media Library + MediaPicker, guest checkout with marketing opt-in, Our Story documents (Constitution/AGM), Admin Email marketing audience, plus quick CMS + Stripe regression. Backend: 38/38 pytest cases pass (added 10 new tests to backend_test.py covering /admin/media list, /admin/upload+/uploads/{id} roundtrip, admin-only auth on media, guest checkout capturing marketing_contacts with opt_in=true & source=ticket_purchase, /content/documents key exists + admin editable, marketing-audience campaign, and extended member/anon authz sweep to /admin/media & /admin/contacts). Frontend: /archive lists 4 past shows with NO performance dates displayed; clicking archive-card-* opens ShowDetail with cast-list + crew-list rendered and booking-box shows 'This season has closed.'. Home renders hero-dot-0..3 slideshow + featured-show section with home-featured-book-btn (label 'View Production' since all seeded shows are past — dynamic featured logic works). Admin nav includes admin-nav-media-library. /admin/media renders admin-media root with 12 built-in media-items + Upload button; uploading a 1x1 PNG increases count to 13 and appears in the library. MediaPicker on /admin/pages Home tab opens the Library dialog with 13 library-photo tiles for selection. /admin/pages has 6 pagetab-* tabs (home, story, membership, contact, documents, sponsors); setting field-constitution_url + field-agm_url and clicking save-page-btn immediately shows doc-constitution + doc-agm links on public /our-story with correct href; documents were reset to blank after test. /admin/email shows Marketing subscribers + All ticket buyers audience options. Stripe checkout for a guest with marketing_opt_in=true returns a https://checkout.stripe.com URL AND creates a marketing_contacts row (verified via /api/admin/contacts).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "The review_request mentions 'GET /api/media and POST /api/media' but the actual routes are /api/admin/media (list) and /api/admin/upload (POST). Both are admin-gated by design — no bug, but naming is inconsistent (GET is /admin/media, POST is /admin/upload; delete is /admin/uploads/{id}, retrieve is public /uploads/{id}). Consider consolidating under a single /admin/media resource with POST/DELETE for consistency.",
+    "Uploaded images are stored as base64 inside MongoDB (db.uploads.data). With a 6MB per-file cap this will bloat the database quickly if the Media Library sees real use. Consider a filesystem or S3-style storage or GridFS.",
+    "OurStory documents-section only renders if constitution_url OR agm_url is set. The default seeded values are empty strings, so a fresh install has NO governance section on Our Story. Consider seeding placeholder URLs or always rendering the section with a helpful 'not published yet' state.",
+    "MediaPicker.PhotoControls uses mediaUrl() to prepend REACT_APP_BACKEND_URL to /api/... paths (good), but MediaLibrary saves the returned relative path elsewhere in CMS — the CMS then stores absolute vs relative URLs inconsistently depending on which entry point uploaded the photo. Consider always storing the relative /api/uploads/{id} form and resolving at render time only.",
+    "server.py has grown to 850 lines with media routes added on top of CMS/payments/campaigns. Splitting into routers (auth, shows, payments, admin_media, admin_content, admin_campaigns) is overdue."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py"
+  ],
+  "success_rate": {"backend": "100% (38/38)", "frontend": "100%"},
+  "test_credentials": "Admin 7yg268b5cs@privaterelay.appleid.com / Plantagenet1953! | Member member@plantagenetplayers.site / Member123!",
+  "seed_data_creation": "Backend auto-seeds admin, demo member, 4 shows (all normalised to status=past), and DEFAULT_CONTENT for 6 CMS keys (home, story, membership, contact, documents, sponsors). Tests self-clean: TEST_-prefixed shows deleted, uploaded 1x1 PNG deleted via /admin/uploads/{id}, marketing_contacts test rows have random @example.com emails (harmless), CMS documents restored to blank after roundtrip. One TEST_-uploaded image left over from the browser test was manually deleted after test run.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend tests: /app/backend/tests/backend_test.py (pytest, 38 cases). Run: `pytest /app/backend/tests/backend_test.py -v`. Admin routes are /admin (index=Overview), /admin/shows, /admin/members, /admin/tickets, /admin/email (NOT /admin/bulk-email), /admin/pages (NOT /admin/edit-pages), /admin/media. Sidebar nav testids DO use hyphenated labels: admin-nav-bulk-email, admin-nav-edit-pages, admin-nav-media-library. Admin pages CMS has 6 tabs incl. pagetab-documents (fields: field-constitution_url, field-agm_url). MediaPicker testids: photo-upload-input, photo-library-btn, library-photo. Media Library testids: admin-media, media-upload-btn, media-item. ShowDetail marketing: marketing-optin checkbox, buyer-name, buyer-email, checkout-btn. Archive: archive-card-<id>. All 4 seeded shows are status=past by design; if you need an active/upcoming show for booking flow, create one via /api/admin/shows and clean up.",
+  "rca of the issue": "N/A — no bugs found. Every listed feature in the review request works end-to-end."
+}

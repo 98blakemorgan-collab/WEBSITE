@@ -26,6 +26,15 @@ Turn Plantagenetplayers.site into a full functional small theatre management sys
 - Member (cast/crew/FOH): portal with tickets + membership status
 - Admin/committee: full dashboard (shows, members, sales, bulk email, lighting assets)
 
+## Implemented — latest batch (2026-06, verified iteration_3 100%)
+- Show Archive page (/archive): past shows listed WITHOUT dates; click opens detail w/ cast/crew
+- Home: dynamic featured/next show section + hero slideshow
+- Media Library (admin) + MediaPicker: upload & reuse photos across CMS/shows/sponsors
+- Guest checkout with marketing opt-in → captured in marketing_contacts (source=ticket_purchase)
+- Our Story: Constitution + AGM minutes document links (CMS pagetab-documents)
+- Admin Email: Marketing subscribers / All ticket buyers audiences
+- Bulk email delivery remains MOCKED by design
+
 ## Implemented (2026-06)
 - Public site (separate routed pages): Home, What's On (+filters), Show detail w/ Stripe checkout, Our Story (history timeline + real production gallery), Membership (apply flow), Sponsors (real logos), Contact (+ real venue/hall-hire facilities)
 - Auth: register/login/me/logout, admin seeding, demo member
