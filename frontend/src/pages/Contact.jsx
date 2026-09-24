@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { MapPin, Mail, Phone, Facebook } from "lucide-react";
+import { MapPin, Mail, Phone, Facebook, FileText } from "lucide-react";
 
 const FALLBACK = {
   hall_name: "Plantagenet District Hall",
@@ -12,6 +12,7 @@ const FALLBACK = {
   email: "boxoffice@plantagenetplayers.site",
   phone: "(08) 9851 0000",
   facebook: "https://www.facebook.com/plantagenetplayers",
+  abn: "",
   venue_desc: "Plantagenet District Hall on Memorial Drive seats up to 165 with retractable theatre-style seating, an equipped stage with in-house lighting & sound, a full-service kitchen and bar, a spacious foyer and full air-conditioning.",
 };
 
@@ -51,6 +52,12 @@ export default function Contact() {
             <Facebook className="w-6 h-6 text-[#D4AF37] mt-1" />
             <div><h3 className="font-serif text-lg text-amber-50">Facebook</h3><p className="text-sm text-amber-50/60">facebook.com/plantagenetplayers</p></div>
           </a>
+          {c.abn && (
+            <div className="p-6 rounded-xl bg-[#6B0F0F] border border-[#D4AF37]/15 flex items-start gap-4" data-testid="contact-abn">
+              <FileText className="w-6 h-6 text-[#D4AF37] mt-1" />
+              <div><h3 className="font-serif text-lg text-amber-50">ABN</h3><p className="text-sm text-amber-50/60">{c.abn}</p></div>
+            </div>
+          )}
         </div>
 
         <form onSubmit={submit} className="p-8 rounded-2xl bg-[#7A1616] border border-[#D4AF37]/25 space-y-5" data-testid="contact-form">

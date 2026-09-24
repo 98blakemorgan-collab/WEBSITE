@@ -54,20 +54,22 @@ export default function OurStory() {
           </div>
         )}
 
-        {(content.documents?.constitution_url || content.documents?.agm_url) && (
-          <div className="mt-16 p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15" data-testid="documents-section">
-            <p className="eyebrow mb-3">Governance</p>
-            <h2 className="font-serif text-2xl text-amber-50 mb-4">Members' documents</h2>
-            <div className="flex flex-wrap gap-4">
-              {content.documents?.constitution_url && (
-                <a href={content.documents.constitution_url} target="_blank" rel="noreferrer" data-testid="doc-constitution" className="px-5 py-3 rounded-full bg-[#7A1616] border border-[#D4AF37]/30 text-amber-50 text-sm hover:border-[#D4AF37]">View our Constitution</a>
-              )}
-              {content.documents?.agm_url && (
-                <a href={content.documents.agm_url} target="_blank" rel="noreferrer" data-testid="doc-agm" className="px-5 py-3 rounded-full bg-[#7A1616] border border-[#D4AF37]/30 text-amber-50 text-sm hover:border-[#D4AF37]">Latest AGM minutes</a>
-              )}
-            </div>
+        <div className="mt-16 p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15" data-testid="documents-section">
+          <p className="eyebrow mb-3">Governance</p>
+          <h2 className="font-serif text-2xl text-amber-50 mb-4">Members' documents</h2>
+          <div className="flex flex-wrap gap-4">
+            {content.documents?.constitution_url ? (
+              <a href={content.documents.constitution_url} target="_blank" rel="noreferrer" data-testid="doc-constitution" className="px-5 py-3 rounded-full bg-[#7A1616] border border-[#D4AF37]/30 text-amber-50 text-sm hover:border-[#D4AF37] transition-colors">View our Constitution</a>
+            ) : (
+              <span data-testid="doc-constitution-pending" className="px-5 py-3 rounded-full bg-[#7A1616]/40 border border-dashed border-[#D4AF37]/25 text-amber-50/50 text-sm cursor-default">Constitution — coming soon</span>
+            )}
+            {content.documents?.agm_url ? (
+              <a href={content.documents.agm_url} target="_blank" rel="noreferrer" data-testid="doc-agm" className="px-5 py-3 rounded-full bg-[#7A1616] border border-[#D4AF37]/30 text-amber-50 text-sm hover:border-[#D4AF37] transition-colors">Latest AGM minutes</a>
+            ) : (
+              <span data-testid="doc-agm-pending" className="px-5 py-3 rounded-full bg-[#7A1616]/40 border border-dashed border-[#D4AF37]/25 text-amber-50/50 text-sm cursor-default">Latest AGM minutes — coming soon</span>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

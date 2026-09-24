@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { MapPin, Mail, Phone, Facebook } from "lucide-react";
+import { useContent } from "@/context/ContentContext";
 
 export function Footer() {
+  const { content } = useContent();
+  const abn = content?.contact?.abn;
   return (
     <footer className="relative border-t border-[#D4AF37]/15 bg-[#3D0000] mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -40,8 +43,8 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-[#D4AF37]/10 py-6 text-center text-xs text-amber-50/30 font-mono tracking-wider">
-        © {new Date().getFullYear()} PLANTAGENET PLAYERS · COMMUNITY THEATRE SINCE 1953
+      <div className="border-t border-[#D4AF37]/10 py-6 text-center text-xs text-amber-50/30 font-mono tracking-wider" data-testid="footer-legal">
+        © {new Date().getFullYear()} PLANTAGENET PLAYERS · COMMUNITY THEATRE SINCE 1953{abn ? ` · ABN ${abn}` : ""}
       </div>
     </footer>
   );

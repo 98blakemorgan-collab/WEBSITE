@@ -44,6 +44,7 @@ const SCHEMA = {
     { k: "email", t: "text", label: "Email" },
     { k: "phone", t: "text", label: "Phone" },
     { k: "facebook", t: "text", label: "Facebook URL" },
+    { k: "abn", t: "text", label: "ABN (Australian Business Number)" },
     { k: "venue_desc", t: "area", label: "Venue & hall-hire description" },
   ],
   sponsors: [

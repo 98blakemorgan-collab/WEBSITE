@@ -675,6 +675,7 @@ DEFAULT_CONTENT = {
         "email": "boxoffice@plantagenetplayers.site",
         "phone": "(08) 9851 0000",
         "facebook": "https://www.facebook.com/plantagenetplayers",
+        "abn": "",
         "venue_desc": "Plantagenet District Hall on Memorial Drive seats up to 165 with retractable theatre-style seating, an equipped stage with in-house lighting & sound, a full-service kitchen and bar with exterior serving windows, a spacious carpeted foyer and full air-conditioning. It's ideal for productions, receptions, reunions, conferences, community events and weddings.",
     },
     "documents": {"constitution_url": "", "agm_url": ""},
