@@ -5,6 +5,7 @@ import { useContent } from "@/context/ContentContext";
 export function Footer() {
   const { content } = useContent();
   const abn = content?.contact?.abn;
+  const docs = content?.documents || {};
   return (
     <footer className="relative border-t border-[#D4AF37]/15 bg-[#3D0000] mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -30,6 +31,8 @@ export function Footer() {
             <li><Link to="/our-story" className="hover:text-amber-50">Our Story</Link></li>
             <li><Link to="/membership" className="hover:text-amber-50">Membership</Link></li>
             <li><Link to="/sponsors" className="hover:text-amber-50">Sponsors</Link></li>
+            {docs.constitution_url && <li><a href={docs.constitution_url} target="_blank" rel="noreferrer" className="hover:text-amber-50" data-testid="footer-constitution">Our Constitution</a></li>}
+            {docs.agm_url && <li><a href={docs.agm_url} target="_blank" rel="noreferrer" className="hover:text-amber-50" data-testid="footer-agm">Latest AGM Minutes</a></li>}
             <li><Link to="/login" className="hover:text-amber-50">Member Login</Link></li>
           </ul>
         </div>
