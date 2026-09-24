@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
-import { DollarSign, Users, Drama, Lightbulb, Ticket, TrendingUp } from "lucide-react";
+import { DollarSign, Users, Drama, Mail, Ticket, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 
 const cards = [
   { key: "revenue", label: "Ticket Revenue", icon: DollarSign, fmt: (v) => `$${Number(v).toLocaleString("en-AU", { minimumFractionDigits: 2 })}`, color: "#D4AF37" },
   { key: "tickets_sold", label: "Tickets Sold", icon: Ticket, fmt: (v) => v, color: "#8B1E26" },
   { key: "members", label: "Members", icon: Users, fmt: (v) => v, color: "#D4AF37" },
-  { key: "upcoming_shows", label: "Upcoming Shows", icon: Drama, fmt: (v) => v, color: "#8B1E26" },
+  { key: "shows_total", label: "Productions", icon: Drama, fmt: (v) => v, color: "#8B1E26" },
 ];
 
 export default function Dashboard() {
@@ -53,19 +53,19 @@ export default function Dashboard() {
         </div>
 
         <div className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
-          <h3 className="font-serif text-xl text-amber-50 mb-6 flex items-center gap-2"><Lightbulb className="w-5 h-5 text-[#D4AF37]" /> Technical</h3>
+          <h3 className="font-serif text-xl text-amber-50 mb-6 flex items-center gap-2"><Users className="w-5 h-5 text-[#D4AF37]" /> Community</h3>
           <div className="space-y-5">
             <div className="flex justify-between items-center pb-4 border-b border-[#D4AF37]/10">
-              <span className="text-sm text-amber-50/60">Lighting fixtures</span>
-              <span className="font-serif text-2xl text-amber-50">{stats.fixtures}</span>
+              <span className="text-sm text-amber-50/60">Active members</span>
+              <span className="font-serif text-2xl text-emerald-400">{stats.active_members}</span>
             </div>
             <div className="flex justify-between items-center pb-4 border-b border-[#D4AF37]/10">
-              <span className="text-sm text-amber-50/60">In service</span>
-              <span className="font-serif text-2xl text-emerald-400">{stats.fixtures_in_service}</span>
+              <span className="text-sm text-amber-50/60">Total members</span>
+              <span className="font-serif text-2xl text-amber-50">{stats.members}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-amber-50/60">Active members</span>
-              <span className="font-serif text-2xl text-[#D4AF37]">{stats.active_members}</span>
+              <span className="text-sm text-amber-50/60 flex items-center gap-2"><Mail className="w-4 h-4" />Email campaigns</span>
+              <span className="font-serif text-2xl text-[#D4AF37]">{stats.campaigns}</span>
             </div>
           </div>
         </div>

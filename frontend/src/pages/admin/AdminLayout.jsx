@@ -1,7 +1,7 @@
 import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Drama, Users, Ticket, Mail, Lightbulb, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Drama, Users, Ticket, Mail, FileText, LogOut, ExternalLink } from "lucide-react";
 
 const nav = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
@@ -9,7 +9,7 @@ const nav = [
   { to: "/admin/members", label: "Members", icon: Users },
   { to: "/admin/tickets", label: "Ticket Sales", icon: Ticket },
   { to: "/admin/email", label: "Bulk Email", icon: Mail },
-  { to: "/admin/fixtures", label: "Lighting Assets", icon: Lightbulb },
+  { to: "/admin/pages", label: "Edit Pages", icon: FileText },
 ];
 
 export default function AdminLayout() {

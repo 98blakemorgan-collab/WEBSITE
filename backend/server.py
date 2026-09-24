@@ -158,19 +158,8 @@ class MemberUpdateIn(BaseModel):
     role: Optional[str] = None
 
 
-class FixtureIn(BaseModel):
-    name: str
-    manufacturer: str
-    model: str
-    fixture_type: str  # Fresnel | Profile | PAR | LED Wash | Moving Head | Cyc | Follow Spot
-    quantity: int = 1
-    dmx_address: Optional[str] = ""
-    dmx_channels: int = 1
-    power_watts: int = 0
-    lamp_hours: int = 0
-    location: str = ""  # FOH Bar 1 | LX 1 | LX 2 | Bridge | Stage Floor
-    status: str = "In Service"  # In Service | Maintenance | Faulty | Retired
-    notes: Optional[str] = ""
+class ContentIn(BaseModel):
+    data: dict
 
 
 class CampaignIn(BaseModel):
@@ -461,35 +450,28 @@ async def admin_transactions(admin: dict = Depends(require_admin)):
 
 
 # ---------------------------------------------------------------------------
-# Admin: lighting fixtures
+# Editable site content (CMS)
 # ---------------------------------------------------------------------------
-@api.get("/admin/fixtures")
-async def list_fixtures(admin: dict = Depends(require_admin)):
-    return await db.lighting_fixtures.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+@api.get("/content")
+async def get_all_content():
+    docs = await db.site_content.find({}, {"_id": 0}).to_list(100)
+    return {d["key"]: d["data"] for d in docs}
 
 
-@api.post("/admin/fixtures")
-async def create_fixture(data: FixtureIn, admin: dict = Depends(require_admin)):
-    f = data.model_dump()
-    f["id"] = str(uuid.uuid4())
-    f["created_at"] = now_utc().isoformat()
-    await db.lighting_fixtures.insert_one(f)
-    return {k: v for k, v in f.items() if k != "_id"}
+@api.get("/content/{key}")
+async def get_content_key(key: str):
+    doc = await db.site_content.find_one({"key": key}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Content not found")
+    return doc["data"]
 
 
-@api.put("/admin/fixtures/{fixture_id}")
-async def update_fixture(fixture_id: str, data: FixtureIn, admin: dict = Depends(require_admin)):
-    await db.lighting_fixtures.update_one({"id": fixture_id}, {"$set": data.model_dump()})
-    f = await db.lighting_fixtures.find_one({"id": fixture_id}, {"_id": 0})
-    if not f:
-        raise HTTPException(status_code=404, detail="Fixture not found")
-    return f
-
-
-@api.delete("/admin/fixtures/{fixture_id}")
-async def delete_fixture(fixture_id: str, admin: dict = Depends(require_admin)):
-    await db.lighting_fixtures.delete_one({"id": fixture_id})
-    return {"ok": True}
+@api.put("/admin/content/{key}")
+async def update_content(key: str, body: ContentIn, admin: dict = Depends(require_admin)):
+    await db.site_content.update_one(
+        {"key": key}, {"$set": {"key": key, "data": body.data, "updated_at": now_utc().isoformat()}}, upsert=True
+    )
+    return {"key": key, "data": body.data}
 
 
 # ---------------------------------------------------------------------------
@@ -537,9 +519,8 @@ async def admin_stats(admin: dict = Depends(require_admin)):
     tickets_sold = await db.tickets.count_documents({})
     members = await db.users.count_documents({"role": "member"})
     active_members = await db.users.count_documents({"membership_status": "active"})
-    upcoming = await db.shows.count_documents({"status": {"$in": ["upcoming", "current"]}})
-    fixtures = await db.lighting_fixtures.count_documents({})
-    fixtures_service = await db.lighting_fixtures.count_documents({"status": "In Service"})
+    shows_total = await db.shows.count_documents({})
+    campaigns = await db.email_campaigns.count_documents({})
 
     # revenue per show
     by_show = {}
@@ -552,16 +533,16 @@ async def admin_stats(admin: dict = Depends(require_admin)):
         "tickets_sold": tickets_sold,
         "members": members,
         "active_members": active_members,
-        "upcoming_shows": upcoming,
-        "fixtures": fixtures,
-        "fixtures_in_service": fixtures_service,
+        "shows_total": shows_total,
+        "campaigns": campaigns,
         "revenue_by_show": revenue_by_show,
     }
 
 
 @api.get("/sponsors")
 async def get_sponsors():
-    return SPONSORS
+    doc = await db.site_content.find_one({"key": "sponsors"}, {"_id": 0})
+    return (doc or {}).get("data", {}).get("items", [])
 
 
 @api.get("/")
@@ -572,12 +553,50 @@ async def root():
 # ---------------------------------------------------------------------------
 # Seed data
 # ---------------------------------------------------------------------------
-SPONSORS = [
+DEFAULT_SPONSORS = [
     {"name": "Mount Barker Co-operative", "tier": "Community Partner", "logo": "/venue/coop.jpg", "url": "https://www.mtbarkercoop.com.au/"},
     {"name": "Shire of Plantagenet", "tier": "Production Partner", "logo": "/venue/shire.jpg", "url": "https://www.plantagenet.wa.gov.au/"},
     {"name": "Bendigo Bank Mount Barker", "tier": "Season Supporter", "logo": "/venue/bendigo.jpg", "url": "https://www.bendigobank.com.au/public/community/our-branches/mount-barker-wa"},
     {"name": "Lotterywest", "tier": "Major Grants Partner", "logo": "/venue/lotto.jpg", "url": "https://www.lotterywest.wa.gov.au/"},
 ]
+
+DEFAULT_CONTENT = {
+    "home": {
+        "eyebrow": "Community Theatre since 1953",
+        "title_line1": "Stories begin",
+        "title_highlight": "here.",
+        "subtitle": "Community-made theatre in Mount Barker. Come for the show — stay for the people, the laughter and the magic behind the curtain.",
+        "slides": ["/venue/slide-4.jpg", "/venue/slider-1.jpg", "/venue/slide-7.jpg", "/venue/slide-8.jpg"],
+        "find_part_title": "You don't have to act.",
+        "find_part_desc": "Theatre needs all kinds of people. Experience is welcome; curiosity is enough.",
+        "heritage_text": "Plantagenet Players have entertained Mount Barker and the Great Southern with variety shows, satire, melodrama, music and community productions since 1953.",
+    },
+    "story": {
+        "hero_image": "/venue/slide-5.jpg",
+        "intro": "Plantagenet Players have entertained Mount Barker and the Great Southern with variety shows, satire, melodrama, music and community productions since 1953. Today the group continues that community tradition, welcoming people on stage, backstage, in technical roles and front of house.",
+        "timeline": [
+            {"year": "1953", "text": "Plantagenet Players is founded, bringing live theatre to the Great Southern for the first time."},
+            {"year": "1960s", "text": "The company's signature satirical variety shows become a beloved fixture of Mount Barker's social calendar."},
+            {"year": "1980s", "text": "Melodramas and pantomimes draw families from across the region to Plantagenet Hall."},
+            {"year": "2000s", "text": "A new generation of members takes the reins, expanding into musicals and contemporary works."},
+            {"year": "Today", "text": "Over 70 years on, we continue the community tradition — welcoming people on stage, backstage, in technical roles and front of house."},
+        ],
+        "gallery": ["/venue/slide-8.jpg", "/venue/slide-3.jpg", "/venue/slide-4.jpg", "/venue/slider-2.jpg"],
+    },
+    "membership": {
+        "title": "You don't have to act.",
+        "description": "Theatre needs all kinds of people. Experience is welcome; curiosity is enough. Choose how you'd like to be involved.",
+    },
+    "contact": {
+        "hall_name": "Plantagenet District Hall",
+        "address": "Memorial Drive, Mount Barker WA 6324",
+        "email": "boxoffice@plantagenetplayers.site",
+        "phone": "(08) 9851 0000",
+        "facebook": "https://www.facebook.com/plantagenetplayers",
+        "venue_desc": "Plantagenet District Hall on Memorial Drive seats up to 165 with retractable theatre-style seating, an equipped stage with in-house lighting & sound, a full-service kitchen and bar with exterior serving windows, a spacious carpeted foyer and full air-conditioning. It's ideal for productions, receptions, reunions, conferences, community events and weddings.",
+    },
+    "sponsors": {"items": DEFAULT_SPONSORS},
+}
 
 
 async def seed():
@@ -688,38 +707,10 @@ async def seed():
                       "status": "past", "performances": []}},
         )
 
-    # Lighting fixtures
-    if await db.lighting_fixtures.count_documents({}) == 0:
-        fixtures = [
-            {"name": "House Left Profile", "manufacturer": "ETC", "model": "Source Four 26°",
-             "fixture_type": "Profile", "quantity": 6, "dmx_address": "A001", "dmx_channels": 1,
-             "power_watts": 750, "lamp_hours": 1240, "location": "FOH Bar 1", "status": "In Service",
-             "notes": "Warm front wash, gel L201"},
-            {"name": "Stage Wash LED", "manufacturer": "Chauvet", "model": "Maverick Force S",
-             "fixture_type": "LED Wash", "quantity": 4, "dmx_address": "A020", "dmx_channels": 16,
-             "power_watts": 470, "lamp_hours": 320, "location": "LX 1", "status": "In Service",
-             "notes": "RGBW, full colour mixing"},
-            {"name": "Fresnel Warm", "manufacturer": "Selecon", "model": "Rama 1.2kW",
-             "fixture_type": "Fresnel", "quantity": 8, "dmx_address": "A100", "dmx_channels": 1,
-             "power_watts": 1200, "lamp_hours": 2100, "location": "LX 2", "status": "Maintenance",
-             "notes": "Barn doors need replacing on unit 3"},
-            {"name": "Moving Head Spot", "manufacturer": "Martin", "model": "MAC Aura XB",
-             "fixture_type": "Moving Head", "quantity": 2, "dmx_address": "B001", "dmx_channels": 24,
-             "power_watts": 260, "lamp_hours": 540, "location": "Bridge", "status": "In Service",
-             "notes": "Used for variety show specials"},
-            {"name": "Cyc Flood", "manufacturer": "ETC", "model": "ColorSource CYC",
-             "fixture_type": "Cyc", "quantity": 4, "dmx_address": "B050", "dmx_channels": 5,
-             "power_watts": 150, "lamp_hours": 890, "location": "Stage Floor", "status": "In Service",
-             "notes": "Rear cyclorama lighting"},
-            {"name": "Follow Spot", "manufacturer": "Robert Juliat", "model": "Roxie 600",
-             "fixture_type": "Follow Spot", "quantity": 1, "dmx_address": "", "dmx_channels": 0,
-             "power_watts": 600, "lamp_hours": 3400, "location": "Bridge", "status": "Faulty",
-             "notes": "Iris mechanism sticking — booked for service"},
-        ]
-        for f in fixtures:
-            f["id"] = str(uuid.uuid4())
-            f["created_at"] = now_utc().isoformat()
-        await db.lighting_fixtures.insert_many(fixtures)
+    # Editable site content (seed defaults once; admin can edit via /admin/content)
+    for key, data in DEFAULT_CONTENT.items():
+        if not await db.site_content.find_one({"key": key}):
+            await db.site_content.insert_one({"key": key, "data": data, "updated_at": now_utc().isoformat()})
 
 
 @app.on_event("startup")
@@ -728,7 +719,6 @@ async def on_startup():
     await db.users.create_index("id", unique=True)
     await db.shows.create_index("id", unique=True)
     await db.tickets.create_index("session_id")
-    await db.lighting_fixtures.create_index("id", unique=True)
     await seed()
     # write test credentials
     creds = Path("/app/memory/test_credentials.md")

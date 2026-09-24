@@ -1,11 +1,23 @@
 import { useState } from "react";
+import { useContent } from "@/context/ContentContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { MapPin, Mail, Phone, Facebook } from "lucide-react";
 
+const FALLBACK = {
+  hall_name: "Plantagenet District Hall",
+  address: "Memorial Drive, Mount Barker WA 6324",
+  email: "boxoffice@plantagenetplayers.site",
+  phone: "(08) 9851 0000",
+  facebook: "https://www.facebook.com/plantagenetplayers",
+  venue_desc: "Plantagenet District Hall on Memorial Drive seats up to 165 with retractable theatre-style seating, an equipped stage with in-house lighting & sound, a full-service kitchen and bar, a spacious foyer and full air-conditioning.",
+};
+
 export default function Contact() {
+  const { content } = useContent();
+  const c = { ...FALLBACK, ...(content.contact || {}) };
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   const submit = (e) => {
@@ -25,17 +37,17 @@ export default function Contact() {
         <div className="space-y-6">
           <div className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15 flex items-start gap-4">
             <MapPin className="w-6 h-6 text-[#D4AF37] mt-1" />
-            <div><h3 className="font-serif text-lg text-amber-50">Plantagenet District Hall</h3><p className="text-sm text-amber-50/60">Memorial Drive, Mount Barker WA 6324</p></div>
+            <div><h3 className="font-serif text-lg text-amber-50">{c.hall_name}</h3><p className="text-sm text-amber-50/60">{c.address}</p></div>
           </div>
           <div className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15 flex items-start gap-4">
             <Mail className="w-6 h-6 text-[#D4AF37] mt-1" />
-            <div><h3 className="font-serif text-lg text-amber-50">Email</h3><p className="text-sm text-amber-50/60">boxoffice@plantagenetplayers.site</p></div>
+            <div><h3 className="font-serif text-lg text-amber-50">Email</h3><p className="text-sm text-amber-50/60">{c.email}</p></div>
           </div>
           <div className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15 flex items-start gap-4">
             <Phone className="w-6 h-6 text-[#D4AF37] mt-1" />
-            <div><h3 className="font-serif text-lg text-amber-50">Phone</h3><p className="text-sm text-amber-50/60">(08) 9851 0000</p></div>
+            <div><h3 className="font-serif text-lg text-amber-50">Phone</h3><p className="text-sm text-amber-50/60">{c.phone}</p></div>
           </div>
-          <a href="https://www.facebook.com/plantagenetplayers" target="_blank" rel="noreferrer" className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15 flex items-start gap-4 hover:border-[#D4AF37]/40 transition-colors" data-testid="contact-facebook">
+          <a href={c.facebook} target="_blank" rel="noreferrer" className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15 flex items-start gap-4 hover:border-[#D4AF37]/40 transition-colors" data-testid="contact-facebook">
             <Facebook className="w-6 h-6 text-[#D4AF37] mt-1" />
             <div><h3 className="font-serif text-lg text-amber-50">Facebook</h3><p className="text-sm text-amber-50/60">facebook.com/plantagenetplayers</p></div>
           </a>
@@ -60,7 +72,7 @@ export default function Contact() {
 
       <div className="mt-8 p-8 rounded-2xl bg-[#181316] border border-[#D4AF37]/15" data-testid="venue-facilities">
         <h2 className="font-serif text-2xl text-amber-50 mb-2">The Venue &amp; Hall Hire</h2>
-        <p className="text-amber-50/65 max-w-3xl leading-relaxed">Plantagenet District Hall on Memorial Drive seats up to 165 with retractable theatre-style seating, an equipped stage with in-house lighting &amp; sound, a full-service kitchen and bar with exterior serving windows, a spacious carpeted foyer and full air-conditioning. It's ideal for productions, receptions, reunions, conferences, community events and weddings.</p>
+        <p className="text-amber-50/65 max-w-3xl leading-relaxed">{c.venue_desc}</p>
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[["Capacity", "Up to 165"], ["Seating", "Retractable theatre-style"], ["Stage", "Lighting & sound systems"], ["Kitchen & Bar", "Full-service"]].map(([k, v]) => (
             <div key={k} className="p-4 rounded-xl bg-[#0D0A0B] border border-[#D4AF37]/15">

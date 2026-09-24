@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useContent } from "@/context/ContentContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -21,6 +22,8 @@ const types = ["On Stage", "Backstage", "Technical", "Front of House", "Patron"]
 
 export default function Membership() {
   const { user, refresh } = useAuth();
+  const { content } = useContent();
+  const mc = content.membership || {};
   const navigate = useNavigate();
   const [type, setType] = useState("On Stage");
   const [interests, setInterests] = useState([]);
@@ -57,8 +60,8 @@ export default function Membership() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
       <p className="eyebrow mb-4">Find your part</p>
-      <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-amber-50 tracking-tight">You don't have to act.</h1>
-      <p className="mt-4 text-amber-50/70 max-w-2xl">Theatre needs all kinds of people. Experience is welcome; curiosity is enough. Choose how you'd like to be involved.</p>
+      <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-amber-50 tracking-tight">{mc.title || "You don't have to act."}</h1>
+      <p className="mt-4 text-amber-50/70 max-w-2xl">{mc.description || "Theatre needs all kinds of people. Experience is welcome; curiosity is enough. Choose how you'd like to be involved."}</p>
 
       <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {parts.map((p) => (
