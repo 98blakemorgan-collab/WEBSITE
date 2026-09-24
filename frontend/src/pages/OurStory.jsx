@@ -30,7 +30,7 @@ export default function OurStory() {
             <div className="absolute left-[7px] top-2 bottom-2 w-px bg-[#D4AF37]/25" />
             <div className="space-y-10">
               {c.timeline.map((t, i) => (
-                <div key={i} className="relative pl-10" data-testid={`timeline-${i}`}>
+                <div key={t.year} className="relative pl-10" data-testid={`timeline-${i}`}>
                   <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-[#8B1E26] border-2 border-[#D4AF37]" />
                   <p className="font-mono text-xs tracking-[0.25em] uppercase text-[#D4AF37]">{t.year}</p>
                   <p className="mt-2 text-amber-50/75 leading-relaxed">{t.text}</p>
@@ -46,7 +46,7 @@ export default function OurStory() {
             <h2 className="font-serif text-3xl text-amber-50 mb-8">Moments from our productions.</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4" data-testid="story-gallery">
               {c.gallery.map((src, i) => (
-                <div key={i} className="rounded-xl overflow-hidden border border-[#D4AF37]/15 aspect-[4/3]">
+                <div key={src} className="rounded-xl overflow-hidden border border-[#D4AF37]/15 aspect-[4/3]">
                   <img src={src} alt="Plantagenet Players production" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                 </div>
               ))}

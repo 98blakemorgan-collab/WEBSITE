@@ -26,6 +26,15 @@ Turn Plantagenetplayers.site into a full functional small theatre management sys
 - Member (cast/crew/FOH): portal with tickets + membership status
 - Admin/committee: full dashboard (shows, members, sales, bulk email, lighting assets)
 
+## Code-quality pass #2 (2026-06)
+- Contexts (`AuthContext`, `ContentContext`): `useCallback` for actions + `useMemo` for provider value → stops needless consumer re-renders; `load` now a stable dep
+- Stable React keys on read-only lists (OurStory timeline/gallery, Home hero dots)
+- Home featured-badge nested ternary replaced with a `FEATURED_BADGE` lookup map
+- Dashboard recharts style objects hoisted to module constants (no per-render allocation)
+- PaymentSuccess poll catch: removed console, comment-documented intentional retry
+- Verified: cookie login persists across hard reload, Home slideshow/featured render, clean compile
+- Intentionally skipped again (false-positive or risky): 19 "missing hook deps" (linter counts local callback params like a/b/find/res — the mount-once effects are correct); `server.py` `is not None` (correct idiom); `create_checkout`/`seed`/component "complexity" splits (over-engineering, regression risk); `craco.config.js` (dev-only platform tooling); editable admin form-array index keys (no stable per-row IDs)
+
 ## Code-quality / security pass (2026-06, verified iteration_4 100%)
 - **Auth hardened**: migrated from localStorage JWT to secure **httpOnly cookies** (same-origin). Backend sets/clears cookie on login/register/logout; `get_current_user` keeps Bearer fallback. Frontend axios `withCredentials`, AuthContext checks `/auth/me` on mount — no token in localStorage. 45/45 backend + 100% frontend tests pass.
 - PaymentSuccess: replaced empty catch with retry logging

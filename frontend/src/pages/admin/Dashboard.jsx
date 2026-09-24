@@ -10,6 +10,10 @@ const cards = [
   { key: "shows_total", label: "Productions", icon: Drama, fmt: (v) => v, color: "#8B1E26" },
 ];
 
+const AXIS_TICK = { fill: "#A399A2", fontSize: 11 };
+const TOOLTIP_STYLE = { background: "#7A1616", border: "1px solid #D4AF3744", borderRadius: 8, color: "#fdf6e3" };
+const TOOLTIP_CURSOR = { fill: "#ffffff08" };
+
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
 
@@ -41,9 +45,9 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={stats.revenue_by_show}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#D4AF3722" vertical={false} />
-                <XAxis dataKey="show" tick={{ fill: "#A399A2", fontSize: 11 }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fill: "#A399A2", fontSize: 11 }} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={{ background: "#7A1616", border: "1px solid #D4AF3744", borderRadius: 8, color: "#fdf6e3" }} cursor={{ fill: "#ffffff08" }} />
+                <XAxis dataKey="show" tick={AXIS_TICK} tickLine={false} axisLine={false} />
+                <YAxis tick={AXIS_TICK} tickLine={false} axisLine={false} />
+                <Tooltip contentStyle={TOOLTIP_STYLE} cursor={TOOLTIP_CURSOR} />
                 <Bar dataKey="revenue" fill="#8B1E26" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

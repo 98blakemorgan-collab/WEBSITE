@@ -14,6 +14,8 @@ const roles = [
 
 const FALLBACK_SLIDES = ["/venue/slide-4.jpg", "/venue/slider-1.jpg", "/venue/slide-7.jpg", "/venue/slide-8.jpg"];
 
+const FEATURED_BADGE = { current: "Now Showing", upcoming: "Next Production" };
+
 export default function Home() {
   const { content } = useContent();
   const c = content.home || {};
@@ -76,8 +78,8 @@ export default function Home() {
         </div>
         {slides.length > 1 && (
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-            {slides.map((_, i) => (
-              <button key={i} onClick={() => setActive(i)} data-testid={`hero-dot-${i}`}
+            {slides.map((src, i) => (
+              <button key={`${src}-${i}`} onClick={() => setActive(i)} data-testid={`hero-dot-${i}`}
                 className={`h-2 rounded-full transition-all ${i === active ? "w-8 bg-[#D4AF37]" : "w-2 bg-amber-50/40"}`} aria-label={`Slide ${i + 1}`} />
             ))}
           </div>
@@ -91,7 +93,7 @@ export default function Home() {
             <div className="relative rounded-2xl overflow-hidden border border-[#D4AF37]/20 group">
               <img src={featured.poster_url} alt={featured.title} className="w-full h-[420px] object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#8B1E26] text-amber-50 text-xs font-mono tracking-wider uppercase">
-                {featured.status === "current" ? "Now Showing" : featured.status === "upcoming" ? "Next Production" : "From the Archive"}
+                {FEATURED_BADGE[featured.status] || "From the Archive"}
               </div>
             </div>
             <div>

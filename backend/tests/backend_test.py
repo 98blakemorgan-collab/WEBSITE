@@ -343,7 +343,7 @@ class TestGuestCheckoutMarketing:
         emails = [c["email"] for c in contacts]
         assert test_email in emails, f"Marketing opt-in email {test_email} not recorded"
         contact = next(c for c in contacts if c["email"] == test_email)
-        assert contact["opt_in"] is True
+        assert contact["opt_in"] == True
         assert contact["source"] == "ticket_purchase"
 
 
