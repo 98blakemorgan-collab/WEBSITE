@@ -24,7 +24,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {cards.map((c) => (
-          <div key={c.key} className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15" data-testid={`stat-${c.key}`}>
+          <div key={c.key} className="p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15" data-testid={`stat-${c.key}`}>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-mono uppercase tracking-wider text-amber-50/50">{c.label}</span>
               <c.icon className="w-5 h-5" style={{ color: c.color }} />
@@ -35,7 +35,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5 mt-6">
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+        <div className="lg:col-span-2 p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
           <h3 className="font-serif text-xl text-amber-50 mb-6 flex items-center gap-2"><TrendingUp className="w-5 h-5 text-[#D4AF37]" /> Revenue by Production</h3>
           {stats.revenue_by_show?.length ? (
             <ResponsiveContainer width="100%" height={280}>
@@ -43,7 +43,7 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#D4AF3722" vertical={false} />
                 <XAxis dataKey="show" tick={{ fill: "#A399A2", fontSize: 11 }} tickLine={false} axisLine={false} />
                 <YAxis tick={{ fill: "#A399A2", fontSize: 11 }} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={{ background: "#241D21", border: "1px solid #D4AF3744", borderRadius: 8, color: "#fdf6e3" }} cursor={{ fill: "#ffffff08" }} />
+                <Tooltip contentStyle={{ background: "#7A1616", border: "1px solid #D4AF3744", borderRadius: 8, color: "#fdf6e3" }} cursor={{ fill: "#ffffff08" }} />
                 <Bar dataKey="revenue" fill="#8B1E26" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -52,7 +52,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+        <div className="p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
           <h3 className="font-serif text-xl text-amber-50 mb-6 flex items-center gap-2"><Users className="w-5 h-5 text-[#D4AF37]" /> Community</h3>
           <div className="space-y-5">
             <div className="flex justify-between items-center pb-4 border-b border-[#D4AF37]/10">

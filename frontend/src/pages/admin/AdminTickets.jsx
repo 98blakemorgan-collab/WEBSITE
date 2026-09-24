@@ -20,21 +20,21 @@ export default function AdminTickets() {
       <p className="text-amber-50/50 mb-6">Every checkout and confirmed sale across all productions.</p>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 mb-8">
-        <div className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+        <div className="p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
           <div className="flex items-center justify-between mb-3"><span className="text-xs font-mono uppercase text-amber-50/50">Revenue</span><DollarSign className="w-5 h-5 text-[#D4AF37]" /></div>
           <p className="font-serif text-3xl text-amber-50">${revenue.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</p>
         </div>
-        <div className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+        <div className="p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
           <div className="flex items-center justify-between mb-3"><span className="text-xs font-mono uppercase text-amber-50/50">Tickets Sold</span><Ticket className="w-5 h-5 text-[#8B1E26]" /></div>
           <p className="font-serif text-3xl text-amber-50">{ticketCount}</p>
         </div>
-        <div className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+        <div className="p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
           <div className="flex items-center justify-between mb-3"><span className="text-xs font-mono uppercase text-amber-50/50">Transactions</span><Ticket className="w-5 h-5 text-[#D4AF37]" /></div>
           <p className="font-serif text-3xl text-amber-50">{txns.length}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#D4AF37]/15 bg-[#181316] overflow-hidden">
+      <div className="rounded-2xl border border-[#D4AF37]/15 bg-[#6B0F0F] overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-[#D4AF37]/15 hover:bg-transparent">

@@ -10,7 +10,7 @@ export function PublicLayout({ children }) {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0D0A0B]">
+    <div className="min-h-screen flex flex-col bg-[#550000]">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />

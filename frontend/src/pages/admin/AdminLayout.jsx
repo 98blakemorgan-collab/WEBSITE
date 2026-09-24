@@ -1,7 +1,7 @@
 import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Drama, Users, Ticket, Mail, FileText, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Drama, Users, Ticket, Mail, FileText, Images, LogOut, ExternalLink } from "lucide-react";
 
 const nav = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
@@ -10,6 +10,7 @@ const nav = [
   { to: "/admin/tickets", label: "Ticket Sales", icon: Ticket },
   { to: "/admin/email", label: "Bulk Email", icon: Mail },
   { to: "/admin/pages", label: "Edit Pages", icon: FileText },
+  { to: "/admin/media", label: "Media Library", icon: Images },
 ];
 
 export default function AdminLayout() {
@@ -17,8 +18,8 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#0D0A0B] flex">
-      <aside className="w-64 shrink-0 border-r border-[#D4AF37]/15 bg-[#0A0708] hidden md:flex flex-col fixed h-full">
+    <div className="min-h-screen bg-[#550000] flex">
+      <aside className="w-64 shrink-0 border-r border-[#D4AF37]/15 bg-[#3D0000] hidden md:flex flex-col fixed h-full">
         <Link to="/" className="flex items-center gap-3 h-20 px-6 border-b border-[#D4AF37]/15">
           <span className="w-9 h-9 rounded-full bg-[#FAF7F2] p-1 flex items-center justify-center ring-1 ring-[#D4AF37]/40"><img src="/pp-logo.png" alt="Plantagenet Players" className="w-full h-full object-contain" /></span>
           <span className="font-serif text-amber-50">Admin</span>
@@ -39,7 +40,7 @@ export default function AdminLayout() {
 
       <div className="flex-1 md:ml-64">
         {/* mobile top nav */}
-        <div className="md:hidden flex items-center gap-2 overflow-x-auto p-3 border-b border-[#D4AF37]/15 bg-[#0A0708] sticky top-0 z-30">
+        <div className="md:hidden flex items-center gap-2 overflow-x-auto p-3 border-b border-[#D4AF37]/15 bg-[#3D0000] sticky top-0 z-30">
           {nav.map((n) => (
             <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `whitespace-nowrap px-3 py-2 rounded-lg text-xs font-medium ${isActive ? "bg-[#8B1E26] text-amber-50" : "text-amber-50/60"}`}>{n.label}</NavLink>
           ))}

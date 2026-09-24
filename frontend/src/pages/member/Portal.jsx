@@ -23,14 +23,14 @@ export default function Portal() {
       <p className="mt-3 text-amber-50/60">Manage your tickets and membership with Plantagenet Players.</p>
 
       <Tabs defaultValue="tickets" className="mt-10">
-        <TabsList className="bg-[#181316] border border-[#D4AF37]/15">
+        <TabsList className="bg-[#6B0F0F] border border-[#D4AF37]/15">
           <TabsTrigger value="tickets" className="data-[state=active]:bg-[#8B1E26] data-[state=active]:text-amber-50" data-testid="tab-tickets">My Tickets</TabsTrigger>
           <TabsTrigger value="membership" className="data-[state=active]:bg-[#8B1E26] data-[state=active]:text-amber-50" data-testid="tab-membership">My Membership</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tickets" className="mt-8">
           {tickets.length === 0 ? (
-            <div className="p-12 rounded-2xl bg-[#181316] border border-[#D4AF37]/15 text-center" data-testid="no-tickets">
+            <div className="p-12 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15 text-center" data-testid="no-tickets">
               <Ticket className="w-10 h-10 text-[#D4AF37]/50 mx-auto mb-4" />
               <p className="text-amber-50/60">You don't have any tickets yet.</p>
               <Button asChild className="mt-5 rounded-full bg-[#8B1E26] hover:bg-[#A6242F] text-amber-50"><Link to="/shows">Browse shows</Link></Button>
@@ -38,7 +38,7 @@ export default function Portal() {
           ) : (
             <div className="grid sm:grid-cols-2 gap-5">
               {tickets.map((t) => (
-                <div key={t.id} className="rounded-2xl bg-gradient-to-br from-[#241D21] to-[#181316] border border-[#D4AF37]/25 overflow-hidden" data-testid={`ticket-${t.id}`}>
+                <div key={t.id} className="rounded-2xl bg-gradient-to-br from-[#7A1616] to-[#6B0F0F] border border-[#D4AF37]/25 overflow-hidden" data-testid={`ticket-${t.id}`}>
                   <div className="p-6 flex justify-between items-start">
                     <div>
                       <p className="font-mono text-[10px] uppercase tracking-widest text-[#D4AF37]/70">Admit One · {t.tier_name}</p>
@@ -60,7 +60,7 @@ export default function Portal() {
         </TabsContent>
 
         <TabsContent value="membership" className="mt-8">
-          <div className="p-8 rounded-2xl bg-[#181316] border border-[#D4AF37]/15 max-w-xl" data-testid="membership-card">
+          <div className="p-8 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15 max-w-xl" data-testid="membership-card">
             <div className="flex items-center gap-3 mb-6">
               <BadgeCheck className="w-8 h-8 text-[#D4AF37]" />
               <div>

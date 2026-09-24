@@ -62,11 +62,11 @@ export default function Shows() {
           {visible.map((s) => {
             const from = Math.min(...(s.ticket_tiers?.map((t) => t.price) || [0]));
             return (
-              <div key={s.id} className="group rounded-2xl overflow-hidden bg-[#181316] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 transition-all flex flex-col" data-testid={`show-card-${s.id}`}>
+              <div key={s.id} className="group rounded-2xl overflow-hidden bg-[#6B0F0F] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 transition-all flex flex-col" data-testid={`show-card-${s.id}`}>
                 <div className="relative h-56 overflow-hidden">
                   <img src={s.poster_url} alt={s.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#181316] to-transparent" />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#0D0A0B]/80 text-[10px] font-mono tracking-wider uppercase text-[#D4AF37]">{s.genre}</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#6B0F0F] to-transparent" />
+                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#550000]/80 text-[10px] font-mono tracking-wider uppercase text-[#D4AF37]">{s.genre}</span>
                   {s.status === "current" && <span className="absolute top-3 right-3 px-3 py-1 rounded-full bg-[#8B1E26] text-[10px] font-mono uppercase text-amber-50">Now Showing</span>}
                 </div>
                 <div className="p-6 flex flex-col flex-1">

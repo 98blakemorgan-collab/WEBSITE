@@ -65,7 +65,7 @@ export default function Membership() {
 
       <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {parts.map((p) => (
-          <div key={p.title} className="p-7 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+          <div key={p.title} className="p-7 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
             <p.icon className="w-8 h-8 text-[#D4AF37] mb-5" />
             <h3 className="font-serif text-xl text-amber-50">{p.title}</h3>
             <p className="mt-2 text-sm text-amber-50/60 leading-relaxed">{p.desc}</p>
@@ -87,11 +87,11 @@ export default function Membership() {
           )}
         </div>
 
-        <div className="p-8 rounded-2xl bg-[#241D21] border border-[#D4AF37]/25" data-testid="membership-form">
+        <div className="p-8 rounded-2xl bg-[#7A1616] border border-[#D4AF37]/25" data-testid="membership-form">
           <label className="block text-xs font-mono uppercase tracking-wider text-amber-50/60 mb-2">I'd like to help with</label>
           <Select value={type} onValueChange={setType}>
-            <SelectTrigger className="bg-[#0D0A0B] border-[#D4AF37]/25 text-amber-50" data-testid="membership-type-select"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-[#181316] border-[#D4AF37]/25 text-amber-50">
+            <SelectTrigger className="bg-[#550000] border-[#D4AF37]/25 text-amber-50" data-testid="membership-type-select"><SelectValue /></SelectTrigger>
+            <SelectContent className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50">
               {types.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -107,7 +107,7 @@ export default function Membership() {
           </div>
 
           <label className="block text-xs font-mono uppercase tracking-wider text-amber-50/60 mb-2 mt-6">Anything you'd like us to know?</label>
-          <Textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="bg-[#0D0A0B] border-[#D4AF37]/25 text-amber-50" placeholder="Tell us a little about yourself…" data-testid="membership-message" />
+          <Textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="bg-[#550000] border-[#D4AF37]/25 text-amber-50" placeholder="Tell us a little about yourself…" data-testid="membership-message" />
 
           <Button onClick={apply} disabled={busy} className="w-full mt-6 h-12 rounded-full bg-[#8B1E26] hover:bg-[#A6242F] text-amber-50 font-semibold" data-testid="membership-submit">
             {busy ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting…</> : "Submit Application"}

@@ -25,7 +25,10 @@ export default function Home() {
   useEffect(() => {
     api.get("/shows").then((res) => {
       const list = res.data;
-      setFeatured(list.find((s) => s.status === "current") || list.find((s) => s.status === "upcoming") || list[0]);
+      const up = list
+        .filter((s) => ["upcoming", "current"].includes(s.status))
+        .sort((a, b) => (a.performances?.[0] || "9999").localeCompare(b.performances?.[0] || "9999"));
+      setFeatured(up[0] || list.find((s) => s.status === "current") || list[0]);
     });
   }, []);
 
@@ -49,8 +52,8 @@ export default function Home() {
               style={{ opacity: i === active ? 1 : 0 }}
             />
           ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0D0A0B] via-[#0D0A0B]/85 to-[#0D0A0B]/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0D0A0B] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#550000] via-[#550000]/85 to-[#550000]/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#550000] via-transparent to-transparent" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="max-w-2xl animate-fade-up">
@@ -92,9 +95,12 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <p className="eyebrow mb-4">Take your seat</p>
+              <p className="eyebrow mb-4">{featured.status === "past" ? "From the archive" : "Next on stage"}</p>
               <h2 className="font-serif text-4xl lg:text-5xl font-bold text-amber-50 tracking-tight">{featured.title}</h2>
               <p className="mt-3 text-[#D4AF37] font-serif italic text-xl">{featured.tagline}</p>
+              {featured.performances?.[0] && (
+                <p className="mt-3 text-sm font-mono text-amber-50/60">{new Date(featured.performances[0]).toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+              )}
               <p className="mt-6 text-amber-50/70 leading-relaxed">{featured.description}</p>
               <div className="mt-8">
                 <Button asChild size="lg" className="rounded-full bg-[#D4AF37] hover:bg-[#E5C158] text-slate-950 font-semibold px-8" data-testid="home-featured-book-btn">
@@ -107,7 +113,7 @@ export default function Home() {
       )}
 
       {/* FIND YOUR PART */}
-      <section className="relative py-20 sm:py-28 border-y border-[#D4AF37]/10 bg-[#0A0708]">
+      <section className="relative py-20 sm:py-28 border-y border-[#D4AF37]/10 bg-[#3D0000]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <p className="eyebrow mb-4">Find your part</p>
@@ -116,7 +122,7 @@ export default function Home() {
           </div>
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {roles.map((r) => (
-              <div key={r.title} className="p-7 rounded-2xl bg-[#181316] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 transition-colors">
+              <div key={r.title} className="p-7 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 transition-colors">
                 <r.icon className="w-8 h-8 text-[#D4AF37] mb-5" />
                 <h3 className="font-serif text-xl text-amber-50">{r.title}</h3>
                 <p className="mt-2 text-sm text-amber-50/60 leading-relaxed">{r.desc}</p>

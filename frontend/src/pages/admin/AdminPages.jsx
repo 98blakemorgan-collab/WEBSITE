@@ -6,12 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Plus, Trash2, Loader2, Save, ArrowUp, ArrowDown } from "lucide-react";
+import { PhotoControls } from "@/components/MediaPicker";
 
 const TABS = [
   { key: "home", label: "Home" },
   { key: "story", label: "Our Story" },
   { key: "membership", label: "Membership" },
   { key: "contact", label: "Contact" },
+  { key: "documents", label: "Documents" },
   { key: "sponsors", label: "Sponsors" },
 ];
 
@@ -47,9 +49,13 @@ const SCHEMA = {
   sponsors: [
     { k: "items", t: "objects", label: "Sponsors", fields: [{ k: "name", label: "Name" }, { k: "tier", label: "Tier" }, { k: "logo", label: "Logo URL" }, { k: "url", label: "Website URL" }], blank: { name: "", tier: "", logo: "", url: "" } },
   ],
+  documents: [
+    { k: "constitution_url", t: "file", label: "Constitution (upload a PDF or paste a link)" },
+    { k: "agm_url", t: "file", label: "Latest AGM minutes (upload a PDF or paste a link)" },
+  ],
 };
 
-const inputCls = "bg-[#0D0A0B] border-[#D4AF37]/25 text-amber-50 mt-1";
+const inputCls = "bg-[#550000] border-[#D4AF37]/25 text-amber-50 mt-1";
 
 function ImageList({ value = [], onChange, label }) {
   const set = (i, v) => onChange(value.map((x, idx) => (idx === i ? v : x)));
@@ -67,10 +73,11 @@ function ImageList({ value = [], onChange, label }) {
       <div className="space-y-2">
         {value.map((src, i) => (
           <div key={i} className="flex items-center gap-3" data-testid={`img-row-${i}`}>
-            <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#0D0A0B] border border-[#D4AF37]/15 shrink-0">
+            <div className="w-14 h-14 rounded-lg overflow-hidden bg-[#550000] border border-[#D4AF37]/15 shrink-0">
               {src ? <img src={src} alt="" className="w-full h-full object-cover" /> : null}
             </div>
             <Input value={src} onChange={(e) => set(i, e.target.value)} className={inputCls + " flex-1"} placeholder="/venue/slide-4.jpg or https://…" />
+            <PhotoControls onPick={(u) => set(i, u)} />
             <div className="flex flex-col">
               <button onClick={() => move(i, -1)} className="text-amber-50/40 hover:text-amber-50"><ArrowUp className="w-3.5 h-3.5" /></button>
               <button onClick={() => move(i, 1)} className="text-amber-50/40 hover:text-amber-50"><ArrowDown className="w-3.5 h-3.5" /></button>
@@ -91,7 +98,7 @@ function ObjectList({ value = [], onChange, label, fields, blank }) {
       <label className="text-xs font-mono uppercase tracking-wider text-amber-50/60">{label}</label>
       <div className="space-y-4 mt-2">
         {value.map((item, i) => (
-          <div key={i} className="p-4 rounded-xl bg-[#0D0A0B] border border-[#D4AF37]/15 relative" data-testid={`obj-row-${i}`}>
+          <div key={i} className="p-4 rounded-xl bg-[#550000] border border-[#D4AF37]/15 relative" data-testid={`obj-row-${i}`}>
             <div className="grid sm:grid-cols-2 gap-3">
               {fields.map((f) => (
                 <div key={f.k} className={f.area ? "sm:col-span-2" : ""}>
@@ -99,6 +106,7 @@ function ObjectList({ value = [], onChange, label, fields, blank }) {
                   {f.area
                     ? <Textarea value={item[f.k] || ""} onChange={(e) => set(i, f.k, e.target.value)} rows={2} className={inputCls} />
                     : <Input value={item[f.k] || ""} onChange={(e) => set(i, f.k, e.target.value)} className={inputCls} />}
+                  {f.k === "logo" && <div className="mt-2"><PhotoControls onPick={(u) => set(i, "logo", u)} /></div>}
                 </div>
               ))}
             </div>
@@ -152,7 +160,7 @@ export default function AdminPages() {
         ))}
       </div>
 
-      <div className="max-w-3xl space-y-6 p-6 sm:p-8 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+      <div className="max-w-3xl space-y-6 p-6 sm:p-8 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
         {fields.map((f) => {
           if (f.t === "text")
             return (
@@ -173,15 +181,27 @@ export default function AdminPages() {
               <div key={f.k}>
                 <label className="text-xs font-mono uppercase tracking-wider text-amber-50/60">{f.label}</label>
                 <div className="flex items-center gap-3 mt-1">
-                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#0D0A0B] border border-[#D4AF37]/15 shrink-0">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-[#550000] border border-[#D4AF37]/15 shrink-0">
                     {form[f.k] ? <img src={form[f.k]} alt="" className="w-full h-full object-cover" /> : null}
                   </div>
-                  <Input value={form[f.k] || ""} onChange={(e) => setField(f.k, e.target.value)} className={"bg-[#0D0A0B] border-[#D4AF37]/25 text-amber-50 flex-1"} placeholder="/venue/slide-5.jpg or https://…" data-testid={`field-${f.k}`} />
+                  <Input value={form[f.k] || ""} onChange={(e) => setField(f.k, e.target.value)} className={"bg-[#550000] border-[#D4AF37]/25 text-amber-50 flex-1"} placeholder="/venue/slide-5.jpg or https://…" data-testid={`field-${f.k}`} />
+                  <PhotoControls onPick={(u) => setField(f.k, u)} />
                 </div>
               </div>
             );
           if (f.t === "images")
             return <ImageList key={f.k} label={f.label} value={form[f.k] || []} onChange={(v) => setField(f.k, v)} />;
+          if (f.t === "file")
+            return (
+              <div key={f.k}>
+                <label className="text-xs font-mono uppercase tracking-wider text-amber-50/60">{f.label}</label>
+                <div className="flex items-center gap-3 mt-1">
+                  <Input value={form[f.k] || ""} onChange={(e) => setField(f.k, e.target.value)} className="bg-[#550000] border-[#D4AF37]/25 text-amber-50 flex-1" placeholder="https://… or upload" data-testid={`field-${f.k}`} />
+                  <PhotoControls accept="application/pdf,image/*" onPick={(u) => setField(f.k, u)} />
+                </div>
+                {form[f.k] ? <a href={form[f.k]} target="_blank" rel="noreferrer" className="text-xs text-[#D4AF37] mt-1 inline-block">Preview current file →</a> : null}
+              </div>
+            );
           if (f.t === "objects")
             return <ObjectList key={f.k} label={f.label} fields={f.fields} blank={f.blank} value={form[f.k] || []} onChange={(v) => setField(f.k, v)} />;
           return null;

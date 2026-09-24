@@ -53,10 +53,10 @@ export default function AdminMembers() {
 
       <div className="relative max-w-sm mb-6">
         <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-amber-50/40" />
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search members…" className="pl-9 bg-[#181316] border-[#D4AF37]/25 text-amber-50" data-testid="member-search" />
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search members…" className="pl-9 bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50" data-testid="member-search" />
       </div>
 
-      <div className="rounded-2xl border border-[#D4AF37]/15 bg-[#181316] overflow-hidden">
+      <div className="rounded-2xl border border-[#D4AF37]/15 bg-[#6B0F0F] overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="border-[#D4AF37]/15 hover:bg-transparent">
@@ -85,14 +85,14 @@ export default function AdminMembers() {
       </div>
 
       <Dialog open={!!edit} onOpenChange={(o) => !o && setEdit(null)}>
-        <DialogContent className="bg-[#181316] border-[#D4AF37]/25 text-amber-50">
+        <DialogContent className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50">
           <DialogHeader><DialogTitle className="font-serif text-2xl">Edit {edit?.name}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div>
               <label className="text-xs font-mono uppercase text-amber-50/50">Membership Status</label>
               <Select value={form.membership_status} onValueChange={(v) => setForm({ ...form, membership_status: v })}>
-                <SelectTrigger className="bg-[#0D0A0B] border-[#D4AF37]/25 mt-1" data-testid="member-status-select"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-[#181316] border-[#D4AF37]/25 text-amber-50">
+                <SelectTrigger className="bg-[#550000] border-[#D4AF37]/25 mt-1" data-testid="member-status-select"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50">
                   {["none", "pending", "active", "expired"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -100,15 +100,15 @@ export default function AdminMembers() {
             <div>
               <label className="text-xs font-mono uppercase text-amber-50/50">Membership Type</label>
               <Select value={form.membership_type || "none"} onValueChange={(v) => setForm({ ...form, membership_type: v === "none" ? "" : v })}>
-                <SelectTrigger className="bg-[#0D0A0B] border-[#D4AF37]/25 mt-1"><SelectValue placeholder="—" /></SelectTrigger>
-                <SelectContent className="bg-[#181316] border-[#D4AF37]/25 text-amber-50">
+                <SelectTrigger className="bg-[#550000] border-[#D4AF37]/25 mt-1"><SelectValue placeholder="—" /></SelectTrigger>
+                <SelectContent className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50">
                   {["none", "On Stage", "Backstage", "Technical", "Front of House", "Patron"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div>
               <label className="text-xs font-mono uppercase text-amber-50/50">Renewal Date</label>
-              <Input value={form.membership_expiry} onChange={(e) => setForm({ ...form, membership_expiry: e.target.value })} placeholder="2026-12-31" className="bg-[#0D0A0B] border-[#D4AF37]/25 mt-1" />
+              <Input value={form.membership_expiry} onChange={(e) => setForm({ ...form, membership_expiry: e.target.value })} placeholder="2026-12-31" className="bg-[#550000] border-[#D4AF37]/25 mt-1" />
             </div>
           </div>
           <DialogFooter>

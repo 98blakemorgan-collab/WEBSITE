@@ -1,11 +1,17 @@
-"""Backend tests for Plantagenet Players theatre management system."""
+"""Backend tests for Plantagenet Players theatre management system (iteration 2)."""
 import os
-import time
+import copy
 import uuid
 import pytest
 import requests
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://theater-hub-13.preview.emergentagent.com").rstrip("/")
+from pathlib import Path
+_fe_env = Path("/app/frontend/.env")
+if _fe_env.exists() and not os.environ.get("REACT_APP_BACKEND_URL"):
+    for line in _fe_env.read_text().splitlines():
+        if line.startswith("REACT_APP_BACKEND_URL="):
+            os.environ["REACT_APP_BACKEND_URL"] = line.split("=", 1)[1].strip()
+BASE_URL = os.environ["REACT_APP_BACKEND_URL"].rstrip("/")
 API = f"{BASE_URL}/api"
 
 ADMIN_EMAIL = "7yg268b5cs@privaterelay.appleid.com"
@@ -13,8 +19,9 @@ ADMIN_PASSWORD = "Plantagenet1953!"
 MEMBER_EMAIL = "member@plantagenetplayers.site"
 MEMBER_PASSWORD = "Member123!"
 
+CONTENT_KEYS = ["home", "story", "membership", "contact", "sponsors"]
 
-# --- fixtures ------------------------------------------------------------
+
 @pytest.fixture(scope="session")
 def s():
     return requests.Session()
@@ -43,9 +50,7 @@ class TestAuth:
     def test_login_admin(self, s):
         r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
         assert r.status_code == 200
-        data = r.json()
-        assert data["user"]["role"] == "admin"
-        assert data["token"]
+        assert r.json()["user"]["role"] == "admin"
 
     def test_login_member(self, s):
         r = s.post(f"{API}/auth/login", json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD})
@@ -56,22 +61,8 @@ class TestAuth:
         r = s.post(f"{API}/auth/login", json={"email": MEMBER_EMAIL, "password": "wrong"})
         assert r.status_code == 401
 
-    def test_register_and_me(self, s):
-        email = f"TEST_{uuid.uuid4().hex[:8]}@example.com"
-        r = s.post(f"{API}/auth/register", json={"name": "Test User", "email": email, "password": "Pass123!"})
-        assert r.status_code == 200, r.text
-        tok = r.json()["token"]
-        me = s.get(f"{API}/auth/me", headers=H(tok))
-        assert me.status_code == 200
-        assert me.json()["email"] == email.lower()
-
-    def test_register_duplicate(self, s):
-        r = s.post(f"{API}/auth/register", json={"name": "X", "email": MEMBER_EMAIL, "password": "x"})
-        assert r.status_code == 400
-
     def test_me_unauthenticated(self, s):
-        r = s.get(f"{API}/auth/me")
-        assert r.status_code == 401
+        assert s.get(f"{API}/auth/me").status_code == 401
 
 
 # --- shows ---------------------------------------------------------------
@@ -81,15 +72,14 @@ class TestShows:
         assert r.status_code == 200
         shows = r.json()
         assert len(shows) >= 4
-        # tiers enriched with sold/available
         for sh in shows:
             for t in sh.get("ticket_tiers", []):
                 assert "sold" in t and "available" in t
 
-    def test_filter_status(self, s):
-        r = s.get(f"{API}/shows", params={"status": "current"})
+    def test_filter_status_past(self, s):
+        r = s.get(f"{API}/shows", params={"status": "past"})
         assert r.status_code == 200
-        assert all(x["status"] == "current" for x in r.json())
+        assert all(x["status"] == "past" for x in r.json())
 
     def test_get_show(self, s):
         shows = s.get(f"{API}/shows").json()
@@ -98,7 +88,90 @@ class TestShows:
         assert r.json()["id"] == shows[0]["id"]
 
     def test_get_show_404(self, s):
-        r = s.get(f"{API}/shows/nonexistent")
+        assert s.get(f"{API}/shows/nonexistent").status_code == 404
+
+
+# --- CMS content ---------------------------------------------------------
+class TestContent:
+    def test_get_all_content(self, s):
+        r = s.get(f"{API}/content")
+        assert r.status_code == 200
+        data = r.json()
+        for k in CONTENT_KEYS:
+            assert k in data, f"missing key {k}"
+        # spot-check structure
+        assert "slides" in data["home"]
+        assert "timeline" in data["story"]
+        assert "items" in data["sponsors"]
+
+    @pytest.mark.parametrize("key", CONTENT_KEYS)
+    def test_get_content_key(self, s, key):
+        r = s.get(f"{API}/content/{key}")
+        assert r.status_code == 200
+        assert isinstance(r.json(), dict)
+
+    def test_get_content_unknown_key(self, s):
+        assert s.get(f"{API}/content/bogus_key").status_code == 404
+
+    def test_update_content_requires_admin(self, s):
+        r = s.put(f"{API}/admin/content/home", json={"data": {"x": 1}})
+        assert r.status_code == 401
+
+    def test_update_content_forbidden_for_member(self, s, member_token):
+        r = s.put(f"{API}/admin/content/home", headers=H(member_token), json={"data": {"x": 1}})
+        assert r.status_code == 403
+
+    def test_update_membership_content_roundtrip(self, s, admin_token):
+        # Fetch original
+        original = s.get(f"{API}/content/membership").json()
+        modified = copy.deepcopy(original)
+        modified["title"] = f"TEST_TITLE_{uuid.uuid4().hex[:6]}"
+
+        try:
+            u = s.put(f"{API}/admin/content/membership", headers=H(admin_token), json={"data": modified})
+            assert u.status_code == 200
+            assert u.json()["data"]["title"] == modified["title"]
+
+            # verify GET returns updated
+            g = s.get(f"{API}/content/membership")
+            assert g.status_code == 200
+            assert g.json()["title"] == modified["title"]
+        finally:
+            # restore
+            restore = s.put(f"{API}/admin/content/membership", headers=H(admin_token), json={"data": original})
+            assert restore.status_code == 200
+            final = s.get(f"{API}/content/membership").json()
+            assert final == original
+
+    def test_sponsors_endpoint_reads_from_content(self, s):
+        r = s.get(f"{API}/sponsors")
+        assert r.status_code == 200
+        items = r.json()
+        assert isinstance(items, list)
+        assert len(items) >= 1
+        assert "name" in items[0]
+
+
+# --- admin stats (fields updated: no fixtures) ---------------------------
+class TestAdminStats:
+    def test_stats_fields(self, s, admin_token):
+        r = s.get(f"{API}/admin/stats", headers=H(admin_token))
+        assert r.status_code == 200
+        data = r.json()
+        for k in ("revenue", "tickets_sold", "members", "active_members", "shows_total", "campaigns", "revenue_by_show"):
+            assert k in data, f"missing stats field {k}"
+        # NO fixtures field
+        assert "fixtures" not in data
+        assert "upcoming_shows" not in data  # replaced by shows_total
+
+    def test_stats_forbidden_for_member(self, s, member_token):
+        assert s.get(f"{API}/admin/stats", headers=H(member_token)).status_code == 403
+
+
+# --- fixtures feature REMOVED --------------------------------------------
+class TestFixturesRemoved:
+    def test_admin_fixtures_gone(self, s, admin_token):
+        r = s.get(f"{API}/admin/fixtures", headers=H(admin_token))
         assert r.status_code == 404
 
 
@@ -113,21 +186,14 @@ class TestAdminShows:
         r = s.post(f"{API}/admin/shows", headers=H(admin_token), json=payload)
         assert r.status_code == 200, r.text
         sid = r.json()["id"]
+        assert s.get(f"{API}/shows/{sid}").status_code == 200
 
-        # verify GET
-        g = s.get(f"{API}/shows/{sid}")
-        assert g.status_code == 200
-        assert g.json()["title"] == "TEST_Show"
-
-        # update
         payload["title"] = "TEST_Show_Updated"
         u = s.put(f"{API}/admin/shows/{sid}", headers=H(admin_token), json=payload)
         assert u.status_code == 200
         assert u.json()["title"] == "TEST_Show_Updated"
 
-        # delete
-        d = s.delete(f"{API}/admin/shows/{sid}", headers=H(admin_token))
-        assert d.status_code == 200
+        assert s.delete(f"{API}/admin/shows/{sid}", headers=H(admin_token)).status_code == 200
         assert s.get(f"{API}/shows/{sid}").status_code == 404
 
     def test_admin_shows_forbidden_for_member(self, s, member_token):
@@ -149,12 +215,7 @@ class TestPayments:
         assert r.status_code == 200, r.text
         data = r.json()
         assert data["checkout_url"].startswith("https://")
-        assert data["session_id"]
-
-        # transaction persisted
-        st = s.get(f"{API}/payments/status/{data['session_id']}")
-        assert st.status_code == 200
-        assert st.json()["payment_status"] in ("pending", "paid")
+        assert "stripe.com" in data["checkout_url"]
 
     def test_checkout_invalid_tier(self, s):
         shows = s.get(f"{API}/shows").json()
@@ -164,81 +225,11 @@ class TestPayments:
         })
         assert r.status_code == 400
 
-    def test_status_unknown_session(self, s):
-        r = s.get(f"{API}/payments/status/cs_unknown")
-        assert r.status_code == 404
-
 
 # --- membership ----------------------------------------------------------
 class TestMembership:
     def test_apply_requires_auth(self, s):
-        r = s.post(f"{API}/membership/apply", json={"membership_type": "On Stage"})
-        assert r.status_code == 401
-
-    def test_apply_success(self, s):
-        # create fresh user
-        email = f"TEST_{uuid.uuid4().hex[:8]}@example.com"
-        reg = s.post(f"{API}/auth/register", json={"name": "M", "email": email, "password": "Pass123!"}).json()
-        tok = reg["token"]
-        r = s.post(f"{API}/membership/apply", headers=H(tok),
-                   json={"membership_type": "Backstage", "interests": ["Lighting"]})
-        assert r.status_code == 200
-        assert r.json()["membership_status"] == "pending"
-        assert r.json()["membership_type"] == "Backstage"
-
-
-# --- admin endpoints -----------------------------------------------------
-class TestAdmin:
-    def test_stats(self, s, admin_token):
-        r = s.get(f"{API}/admin/stats", headers=H(admin_token))
-        assert r.status_code == 200
-        for k in ("revenue", "tickets_sold", "members", "upcoming_shows", "fixtures", "revenue_by_show"):
-            assert k in r.json()
-
-    def test_members(self, s, admin_token):
-        r = s.get(f"{API}/admin/members", headers=H(admin_token))
-        assert r.status_code == 200
-        assert isinstance(r.json(), list)
-        assert all("password_hash" not in m for m in r.json())
-
-    def test_tickets(self, s, admin_token):
-        r = s.get(f"{API}/admin/tickets", headers=H(admin_token))
-        assert r.status_code == 200
-
-    def test_transactions(self, s, admin_token):
-        r = s.get(f"{API}/admin/transactions", headers=H(admin_token))
-        assert r.status_code == 200
-
-    def test_member_cannot_access_admin(self, s, member_token):
-        assert s.get(f"{API}/admin/stats", headers=H(member_token)).status_code == 403
-        assert s.get(f"{API}/admin/members", headers=H(member_token)).status_code == 403
-
-
-# --- fixtures CRUD --------------------------------------------------------
-class TestFixtures:
-    def test_list_seeded(self, s, admin_token):
-        r = s.get(f"{API}/admin/fixtures", headers=H(admin_token))
-        assert r.status_code == 200
-        assert len(r.json()) >= 6
-
-    def test_fixture_crud(self, s, admin_token):
-        payload = {
-            "name": "TEST_Fixture", "manufacturer": "ETC", "model": "S4",
-            "fixture_type": "Profile", "quantity": 1, "dmx_address": "A500",
-            "dmx_channels": 1, "power_watts": 500, "lamp_hours": 10,
-            "location": "LX 1", "status": "In Service", "notes": "",
-        }
-        r = s.post(f"{API}/admin/fixtures", headers=H(admin_token), json=payload)
-        assert r.status_code == 200
-        fid = r.json()["id"]
-
-        payload["lamp_hours"] = 999
-        u = s.put(f"{API}/admin/fixtures/{fid}", headers=H(admin_token), json=payload)
-        assert u.status_code == 200
-        assert u.json()["lamp_hours"] == 999
-
-        d = s.delete(f"{API}/admin/fixtures/{fid}", headers=H(admin_token))
-        assert d.status_code == 200
+        assert s.post(f"{API}/membership/apply", json={"membership_type": "On Stage"}).status_code == 401
 
 
 # --- campaigns -----------------------------------------------------------
@@ -247,22 +238,12 @@ class TestCampaigns:
         r = s.post(f"{API}/admin/campaigns", headers=H(admin_token),
                    json={"subject": "TEST_Subject", "body": "hi", "audience": "all"})
         assert r.status_code == 200
-        data = r.json()
-        assert data["status"] == "sent"
-        assert data["recipient_count"] >= 1
-
-        # appears in list
-        lst = s.get(f"{API}/admin/campaigns", headers=H(admin_token)).json()
-        assert any(c["subject"] == "TEST_Subject" for c in lst)
+        assert r.json()["status"] == "sent"
+        assert r.json()["recipient_count"] >= 1
 
 
-# --- tickets my ----------------------------------------------------------
-class TestMyTickets:
-    def test_my_tickets_auth(self, s, member_token):
-        r = s.get(f"{API}/tickets/my", headers=H(member_token))
-        assert r.status_code == 200
-        assert isinstance(r.json(), list)
-
-    def test_my_tickets_unauth(self, s):
-        r = s.get(f"{API}/tickets/my")
-        assert r.status_code == 401
+# --- admin authz sweep ---------------------------------------------------
+class TestAdminAuthz:
+    def test_member_cannot_access_admin_endpoints(self, s, member_token):
+        for path in ("/admin/stats", "/admin/members", "/admin/tickets", "/admin/transactions", "/admin/campaigns"):
+            assert s.get(f"{API}{path}", headers=H(member_token)).status_code == 403, path

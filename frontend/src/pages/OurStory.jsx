@@ -15,7 +15,7 @@ export default function OurStory() {
     <div>
       <div className="relative h-[40vh] min-h-[300px] overflow-hidden grain">
         <img src={c.hero_image} alt="The historic Plantagenet Hall" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0A0B] via-[#0D0A0B]/70 to-[#0D0A0B]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#550000] via-[#550000]/70 to-[#550000]/30" />
         <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
           <p className="eyebrow mb-2">Our story</p>
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-amber-50 tracking-tight max-w-3xl">More than 70 years in the spotlight.</h1>
@@ -50,6 +50,21 @@ export default function OurStory() {
                   <img src={src} alt="Plantagenet Players production" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {(content.documents?.constitution_url || content.documents?.agm_url) && (
+          <div className="mt-16 p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15" data-testid="documents-section">
+            <p className="eyebrow mb-3">Governance</p>
+            <h2 className="font-serif text-2xl text-amber-50 mb-4">Members' documents</h2>
+            <div className="flex flex-wrap gap-4">
+              {content.documents?.constitution_url && (
+                <a href={content.documents.constitution_url} target="_blank" rel="noreferrer" data-testid="doc-constitution" className="px-5 py-3 rounded-full bg-[#7A1616] border border-[#D4AF37]/30 text-amber-50 text-sm hover:border-[#D4AF37]">View our Constitution</a>
+              )}
+              {content.documents?.agm_url && (
+                <a href={content.documents.agm_url} target="_blank" rel="noreferrer" data-testid="doc-agm" className="px-5 py-3 rounded-full bg-[#7A1616] border border-[#D4AF37]/30 text-amber-50 text-sm hover:border-[#D4AF37]">Latest AGM minutes</a>
+              )}
             </div>
           </div>
         )}

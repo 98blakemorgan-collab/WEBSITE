@@ -8,13 +8,14 @@ import os
 import uuid
 import logging
 import secrets
+import base64
 from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 
 import jwt
 import bcrypt
 import stripe
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Depends, Response
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Depends, Response, UploadFile, File
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field, EmailStr
@@ -126,6 +127,16 @@ class TicketTier(BaseModel):
     capacity: int
 
 
+class CastMember(BaseModel):
+    actor: str = ""
+    role: str = ""
+
+
+class CrewMember(BaseModel):
+    name: str = ""
+    role: str = ""
+
+
 class ShowIn(BaseModel):
     title: str
     tagline: Optional[str] = ""
@@ -136,6 +147,11 @@ class ShowIn(BaseModel):
     status: str = "upcoming"  # upcoming | current | past
     performances: List[str] = []  # ISO datetime strings
     ticket_tiers: List[TicketTier] = []
+    director: Optional[str] = ""
+    duration: Optional[str] = ""
+    synopsis: Optional[str] = ""
+    cast: List[CastMember] = []
+    crew: List[CrewMember] = []
 
 
 class CheckoutIn(BaseModel):
@@ -143,6 +159,9 @@ class CheckoutIn(BaseModel):
     tier_name: str
     quantity: int = Field(1, ge=1, le=20)
     origin_url: str
+    buyer_name: Optional[str] = ""
+    buyer_email: Optional[str] = ""
+    marketing_opt_in: bool = False
 
 
 class MembershipApplyIn(BaseModel):
@@ -307,6 +326,15 @@ async def create_checkout(data: CheckoutIn, request: Request):
     except HTTPException:
         pass
 
+    buyer_email = (user or {}).get("email") or (data.buyer_email or "").lower().strip() or None
+    buyer_name = (user or {}).get("name") or data.buyer_name or ""
+    if data.marketing_opt_in and buyer_email:
+        await db.marketing_contacts.update_one(
+            {"email": buyer_email},
+            {"$set": {"email": buyer_email, "name": buyer_name, "opt_in": True,
+                      "source": "ticket_purchase", "updated_at": now_utc().isoformat()}},
+            upsert=True,
+        )
     unit_price = float(tier["price"])
     session = stripe.checkout.Session.create(
         line_items=[{
@@ -326,7 +354,9 @@ async def create_checkout(data: CheckoutIn, request: Request):
     await db.payment_transactions.insert_one({
         "session_id": session.id,
         "user_id": (user or {}).get("id"),
-        "buyer_email": (user or {}).get("email"),
+        "buyer_email": buyer_email,
+        "buyer_name": buyer_name,
+        "marketing_opt_in": bool(data.marketing_opt_in),
         "show_id": data.show_id,
         "show_title": show["title"],
         "tier_name": data.tier_name,
@@ -475,6 +505,49 @@ async def update_content(key: str, body: ContentIn, admin: dict = Depends(requir
 
 
 # ---------------------------------------------------------------------------
+# Media: image upload + library
+# ---------------------------------------------------------------------------
+VENUE_PHOTOS = [
+    "/venue/slide-3.jpg", "/venue/slide-4.jpg", "/venue/slide-5.jpg", "/venue/slide-6.jpg",
+    "/venue/slide-7.jpg", "/venue/slide-8.jpg", "/venue/slider-1.jpg", "/venue/slider-2.jpg",
+    "/venue/coop.jpg", "/venue/shire.jpg", "/venue/bendigo.jpg", "/venue/lotto.jpg",
+]
+
+
+@api.post("/admin/upload")
+async def upload_image(file: UploadFile = File(...), admin: dict = Depends(require_admin)):
+    content = await file.read()
+    if len(content) > 6_000_000:
+        raise HTTPException(status_code=400, detail="Image too large (max 6MB)")
+    uid = str(uuid.uuid4())
+    await db.uploads.insert_one({
+        "id": uid, "content_type": file.content_type or "image/jpeg",
+        "data": base64.b64encode(content).decode(), "created_at": now_utc().isoformat(),
+    })
+    return {"path": f"/api/uploads/{uid}"}
+
+
+@api.get("/uploads/{uid}")
+async def get_upload(uid: str):
+    doc = await db.uploads.find_one({"id": uid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Not found")
+    return Response(content=base64.b64decode(doc["data"]), media_type=doc.get("content_type", "image/jpeg"))
+
+
+@api.delete("/admin/uploads/{uid}")
+async def delete_upload(uid: str, admin: dict = Depends(require_admin)):
+    await db.uploads.delete_one({"id": uid})
+    return {"ok": True}
+
+
+@api.get("/admin/media")
+async def list_media(admin: dict = Depends(require_admin)):
+    ups = await db.uploads.find({}, {"_id": 0, "id": 1}).sort("created_at", -1).to_list(500)
+    return {"photos": [f"/api/uploads/{u['id']}" for u in ups] + VENUE_PHOTOS}
+
+
+# ---------------------------------------------------------------------------
 # Admin: bulk email campaigns (compose + record; delivery mocked)
 # ---------------------------------------------------------------------------
 @api.get("/admin/campaigns")
@@ -492,7 +565,11 @@ def audience_query(audience: str):
 
 @api.post("/admin/campaigns")
 async def create_campaign(data: CampaignIn, admin: dict = Depends(require_admin)):
-    recipients = await db.users.find(audience_query(data.audience), {"_id": 0, "email": 1, "name": 1}).to_list(5000)
+    if data.audience in ("marketing", "buyers"):
+        q = {"opt_in": True} if data.audience == "marketing" else {}
+        recipients = await db.marketing_contacts.find(q, {"_id": 0, "email": 1, "name": 1}).to_list(5000)
+    else:
+        recipients = await db.users.find(audience_query(data.audience), {"_id": 0, "email": 1, "name": 1}).to_list(5000)
     campaign = {
         "id": str(uuid.uuid4()),
         "subject": data.subject,
@@ -537,6 +614,11 @@ async def admin_stats(admin: dict = Depends(require_admin)):
         "campaigns": campaigns,
         "revenue_by_show": revenue_by_show,
     }
+
+
+@api.get("/admin/contacts")
+async def admin_contacts(admin: dict = Depends(require_admin)):
+    return await db.marketing_contacts.find({}, {"_id": 0}).sort("updated_at", -1).to_list(5000)
 
 
 @api.get("/sponsors")
@@ -595,6 +677,7 @@ DEFAULT_CONTENT = {
         "facebook": "https://www.facebook.com/plantagenetplayers",
         "venue_desc": "Plantagenet District Hall on Memorial Drive seats up to 165 with retractable theatre-style seating, an equipped stage with in-house lighting & sound, a full-service kitchen and bar with exterior serving windows, a spacious carpeted foyer and full air-conditioning. It's ideal for productions, receptions, reunions, conferences, community events and weddings.",
     },
+    "documents": {"constitution_url": "", "agm_url": ""},
     "sponsors": {"items": DEFAULT_SPONSORS},
 }
 
@@ -700,11 +783,30 @@ async def seed():
         "Spring Variety Show": "/venue/slide-7.jpg",
         "Blooming Good Show": "/venue/slider-1.jpg",
     }
+    details_map = {
+        "The Great Southern Satire": {"director": "Barbara Ellison", "duration": "2 hrs incl. interval",
+            "synopsis": "A riotous night of local wit skewering everything from council meetings to country footy, stitched together with live songs and dance.",
+            "cast": [{"actor": "Jill Marwick", "role": "Compère"}, {"actor": "Tom Reilly", "role": "The Mayor"}, {"actor": "The Company", "role": "Ensemble"}],
+            "crew": [{"role": "Director", "name": "Barbara Ellison"}, {"role": "Lighting & Sound", "name": "Ken Doust"}]},
+        "Mount Barker Melodrama": {"director": "Geoff Prosser", "duration": "1 hr 45 min",
+            "synopsis": "An old-fashioned melodrama — boo the villain, cheer the hero — with plenty of audience participation for the whole family.",
+            "cast": [{"actor": "David Kerr", "role": "The Villain"}, {"actor": "Sarah Lowe", "role": "The Heroine"}, {"actor": "The Nurses", "role": "Chorus"}],
+            "crew": [{"role": "Director", "name": "Geoff Prosser"}, {"role": "Costumes", "name": "Margaret Hill"}]},
+        "Spring Variety Show": {"director": "The Committee", "duration": "2 hrs",
+            "synopsis": "Our beloved annual variety spectacular — song, dance and comedy from cast members of all ages.",
+            "cast": [{"actor": "The Witches", "role": "Opening Number"}, {"actor": "Junior Players", "role": "Dance Troupe"}, {"actor": "The Company", "role": "Ensemble"}],
+            "crew": [{"role": "Stage Manager", "name": "Ken Doust"}, {"role": "Musical Director", "name": "Barbara Ellison"}]},
+        "Blooming Good Show": {"director": "Margaret Hill", "duration": "2 hrs incl. interval",
+            "synopsis": "A festive celebration of local talent with comedy, live songs and dance.",
+            "cast": [{"actor": "Santa's Helpers", "role": "Festive Ensemble"}, {"actor": "The Company", "role": "Singers & Dancers"}],
+            "crew": [{"role": "Director", "name": "Margaret Hill"}, {"role": "Front of House", "name": "Tom Reilly"}]},
+    }
     for title, url in poster_map.items():
+        extra = details_map.get(title, {})
         await db.shows.update_one(
             {"title": title},
             {"$set": {"poster_url": url, "venue": "Plantagenet District Hall, Memorial Drive, Mount Barker",
-                      "status": "past", "performances": []}},
+                      "status": "past", "performances": [], **extra}},
         )
 
     # Editable site content (seed defaults once; admin can edit via /admin/content)

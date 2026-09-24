@@ -7,6 +7,7 @@ import { Menu, X, Ticket, LogOut, LayoutDashboard, User } from "lucide-react";
 const links = [
   { to: "/shows", label: "What's On" },
   { to: "/our-story", label: "Our Story" },
+  { to: "/archive", label: "Archive" },
   { to: "/membership", label: "Membership" },
   { to: "/sponsors", label: "Sponsors" },
   { to: "/contact", label: "Contact" },
@@ -23,7 +24,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0D0A0B]/85 backdrop-blur-xl border-b border-[#D4AF37]/15">
+    <header className="sticky top-0 z-50 bg-[#550000]/85 backdrop-blur-xl border-b border-[#D4AF37]/15">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
         <Link to="/" className="flex items-center gap-3 group" data-testid="nav-logo">
           <span className="w-11 h-11 rounded-full bg-[#FAF7F2] p-1.5 flex items-center justify-center ring-1 ring-[#D4AF37]/40 group-hover:ring-[#D4AF37] transition-all">
@@ -83,7 +84,7 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <div className="lg:hidden border-t border-[#D4AF37]/15 bg-[#0D0A0B] px-4 py-4 space-y-1">
+        <div className="lg:hidden border-t border-[#D4AF37]/15 bg-[#550000] px-4 py-4 space-y-1">
           {links.map((l) => (
             <NavLink
               key={l.to}

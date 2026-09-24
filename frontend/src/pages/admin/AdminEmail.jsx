@@ -10,6 +10,8 @@ import { Send, Mail, Users, Loader2, Eye } from "lucide-react";
 const audiences = [
   { key: "all", label: "All members" },
   { key: "active", label: "Active members only" },
+  { key: "buyers", label: "All ticket buyers" },
+  { key: "marketing", label: "Marketing subscribers" },
   { key: "On Stage", label: "On Stage" },
   { key: "Backstage", label: "Backstage" },
   { key: "Technical", label: "Technical" },
@@ -54,30 +56,30 @@ export default function AdminEmail() {
       <div className="mb-6 inline-block px-3 py-1.5 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-xs text-[#D4AF37] font-mono">DEMO: delivery is MOCKED — recipients & campaign history are recorded, no live email sent.</div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15 space-y-5">
+        <div className="lg:col-span-2 p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15 space-y-5">
           <div>
             <label className="text-xs font-mono uppercase text-amber-50/50">Audience</label>
             <Select value={audience} onValueChange={setAudience}>
-              <SelectTrigger className="bg-[#0D0A0B] border-[#D4AF37]/25 mt-1 text-amber-50" data-testid="email-audience-select"><SelectValue /></SelectTrigger>
-              <SelectContent className="bg-[#181316] border-[#D4AF37]/25 text-amber-50">
+              <SelectTrigger className="bg-[#550000] border-[#D4AF37]/25 mt-1 text-amber-50" data-testid="email-audience-select"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50">
                 {audiences.map((a) => <SelectItem key={a.key} value={a.key}>{a.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
             <label className="text-xs font-mono uppercase text-amber-50/50">Subject</label>
-            <Input value={subject} onChange={(e) => setSubject(e.target.value)} className="bg-[#0D0A0B] border-[#D4AF37]/25 mt-1 text-amber-50" data-testid="email-subject-input" />
+            <Input value={subject} onChange={(e) => setSubject(e.target.value)} className="bg-[#550000] border-[#D4AF37]/25 mt-1 text-amber-50" data-testid="email-subject-input" />
           </div>
           <div>
             <label className="text-xs font-mono uppercase text-amber-50/50">Message</label>
-            <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={10} className="bg-[#0D0A0B] border-[#D4AF37]/25 mt-1 text-amber-50 font-sans" data-testid="email-body-input" />
+            <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={10} className="bg-[#550000] border-[#D4AF37]/25 mt-1 text-amber-50 font-sans" data-testid="email-body-input" />
           </div>
           <div className="flex gap-3">
             <Button onClick={() => setPreview(!preview)} variant="outline" className="border-[#D4AF37]/30 bg-transparent text-amber-50" data-testid="email-preview-btn"><Eye className="w-4 h-4 mr-2" />{preview ? "Hide" : "Preview"}</Button>
             <Button onClick={send} disabled={busy} className="bg-[#8B1E26] hover:bg-[#A6242F] text-amber-50 flex-1" data-testid="email-send-btn">{busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4 mr-2" />Send Campaign</>}</Button>
           </div>
           {preview && (
-            <div className="p-6 rounded-xl bg-[#0D0A0B] border border-[#D4AF37]/25" data-testid="email-preview">
+            <div className="p-6 rounded-xl bg-[#550000] border border-[#D4AF37]/25" data-testid="email-preview">
               <p className="text-xs font-mono uppercase text-[#D4AF37]/70 mb-2">Preview</p>
               <h4 className="font-serif text-lg text-amber-50">{subject || "(no subject)"}</h4>
               <div className="mt-3 text-sm text-amber-50/70 whitespace-pre-wrap">{body || "(empty)"}</div>
@@ -86,17 +88,17 @@ export default function AdminEmail() {
         </div>
 
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+          <div className="p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
             <h3 className="font-serif text-lg text-amber-50 mb-4">Templates</h3>
             <div className="space-y-2">
               {templates.map((t) => (
-                <button key={t.name} onClick={() => applyTemplate(t)} className="w-full text-left px-4 py-3 rounded-lg bg-[#0D0A0B] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 text-sm text-amber-50/80 transition-colors" data-testid={`template-${t.name.replace(/\s/g, "-")}`}>
+                <button key={t.name} onClick={() => applyTemplate(t)} className="w-full text-left px-4 py-3 rounded-lg bg-[#550000] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 text-sm text-amber-50/80 transition-colors" data-testid={`template-${t.name.replace(/\s/g, "-")}`}>
                   <Mail className="w-4 h-4 inline mr-2 text-[#D4AF37]" />{t.name}
                 </button>
               ))}
             </div>
           </div>
-          <div className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15">
+          <div className="p-6 rounded-2xl bg-[#6B0F0F] border border-[#D4AF37]/15">
             <h3 className="font-serif text-lg text-amber-50 mb-4 flex items-center gap-2"><Users className="w-4 h-4 text-[#D4AF37]" />Recent Campaigns</h3>
             {campaigns.length === 0 ? <p className="text-sm text-amber-50/40">No campaigns sent yet.</p> : (
               <div className="space-y-3">

@@ -30,7 +30,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-[#0D0A0B]">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-[#550000]">
       <div className="flex items-center justify-center p-6 sm:p-12 order-2 lg:order-1">
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-3 mb-10">
@@ -44,19 +44,19 @@ export default function Register() {
             {error && <div className="p-3 rounded-lg bg-destructive/15 border border-destructive/40 text-sm text-red-300" data-testid="register-error">{error}</div>}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-amber-50/60 mb-2">Full name</label>
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="bg-[#181316] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-name" />
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-name" />
             </div>
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-amber-50/60 mb-2">Email</label>
-              <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="bg-[#181316] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-email" />
+              <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-email" />
             </div>
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-amber-50/60 mb-2">Phone (optional)</label>
-              <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-[#181316] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-phone" />
+              <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-phone" />
             </div>
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-amber-50/60 mb-2">Password</label>
-              <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} className="bg-[#181316] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-password" />
+              <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} className="bg-[#6B0F0F] border-[#D4AF37]/25 text-amber-50 h-11" data-testid="register-password" />
             </div>
             <Button type="submit" disabled={busy} className="w-full h-12 rounded-full bg-[#8B1E26] hover:bg-[#A6242F] text-amber-50 font-semibold" data-testid="register-submit">
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Account"}
@@ -68,7 +68,7 @@ export default function Register() {
       </div>
       <div className="hidden lg:block relative order-1 lg:order-2 grain">
         <img src={HERO} alt="Stage" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0A0B] via-[#0D0A0B]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#550000] via-[#550000]/40 to-transparent" />
       </div>
     </div>
   );

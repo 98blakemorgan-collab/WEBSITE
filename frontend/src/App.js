@@ -10,6 +10,7 @@ import Home from "@/pages/Home";
 import Shows from "@/pages/Shows";
 import ShowDetail from "@/pages/ShowDetail";
 import OurStory from "@/pages/OurStory";
+import Archive from "@/pages/Archive";
 import Membership from "@/pages/Membership";
 import Sponsors from "@/pages/Sponsors";
 import Contact from "@/pages/Contact";
@@ -26,6 +27,7 @@ import AdminMembers from "@/pages/admin/AdminMembers";
 import AdminTickets from "@/pages/admin/AdminTickets";
 import AdminEmail from "@/pages/admin/AdminEmail";
 import AdminPages from "@/pages/admin/AdminPages";
+import MediaLibrary from "@/pages/admin/MediaLibrary";
 
 const pub = (el) => <PublicLayout>{el}</PublicLayout>;
 
@@ -40,6 +42,7 @@ function App() {
               <Route path="/shows" element={pub(<Shows />)} />
               <Route path="/shows/:id" element={pub(<ShowDetail />)} />
               <Route path="/our-story" element={pub(<OurStory />)} />
+              <Route path="/archive" element={pub(<Archive />)} />
               <Route path="/membership" element={pub(<Membership />)} />
               <Route path="/sponsors" element={pub(<Sponsors />)} />
               <Route path="/contact" element={pub(<Contact />)} />
@@ -57,6 +60,7 @@ function App() {
                 <Route path="tickets" element={<AdminTickets />} />
                 <Route path="email" element={<AdminEmail />} />
                 <Route path="pages" element={<AdminPages />} />
+                <Route path="media" element={<MediaLibrary />} />
               </Route>
             </Routes>
           </BrowserRouter>
