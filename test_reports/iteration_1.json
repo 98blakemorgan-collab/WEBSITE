@@ -1,0 +1,45 @@
+{
+  "summary": "First full pass on Plantagenet Players theatre app. 27 pytest cases (26 pass, 1 was a test-side casing assertion — fixed). Frontend flows verified: public nav (5 pages), shows listing, admin login->/admin dashboard KPIs, all admin subroutes (shows, members, tickets, email, fixtures) render, member login->/portal, member->/admin correctly redirects to /portal, unauthenticated /portal redirects to /login, Stripe checkout successfully redirects to checkout.stripe.com with a real cs_test session, seed data (4 shows + 6 fixtures + admin + demo member) present.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /api/sponsors", "issue": "Route is declared BEFORE the SPONSORS list is defined in server.py, and it references the module-level SPONSORS constant. Since the constant is defined at import time in the same module this happens to work, but the route ordering is confusing / fragile — recommend moving @api.get('/sponsors') below SPONSORS list."},
+      {"endpoint": "POST /api/stripe/webhook", "issue": "STRIPE_WEBHOOK_SECRET is loaded once at import; empty secret causes construct_event to reject all events. Fine for sandbox but should be documented."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AdminEmail", "issue": "Subject and Message inputs lack data-testid (only email-send-btn has one). Add data-testid=\"email-subject\" and \"email-body\" for robust E2E.", "selector": "src/pages/admin/AdminEmail.jsx", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Global <title>", "issues": ["Browser tab title is still 'Emergent | Fullstack App' — should be updated to 'Plantagenet Players' in public/index.html for branding."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "OPTIONAL: Add data-testid=\"email-subject\" and data-testid=\"email-body\" to inputs in AdminEmail.jsx.",
+    "OPTIONAL: Update public/index.html <title> from generic Emergent placeholder to 'Plantagenet Players'.",
+    "OPTIONAL: Reorder /api/sponsors route to after SPONSORS list definition for clarity."
+  ],
+  "critical_code_review_comments": [
+    "server.py is ~740 lines; still manageable but consider splitting routers (auth, shows, payments, admin) into separate modules if the file grows further.",
+    "get_current_user reads cookies OR Bearer header — good, but /auth/logout only deletes cookie; frontend actually stores JWT in localStorage 'pp_token' and clears it client-side. This dual auth surface works but is inconsistent; pick one.",
+    "issue_tickets is called from both webhook and status polling — idempotent via find_one(session_id) check. Good.",
+    "payment_transactions status polling uses stripe.checkout.Session.retrieve on every /payments/status call until paid — acceptable but rate-limits could bite in a burst; consider adding short-circuit if updated_at is very recent.",
+    "All admin endpoints correctly use require_admin dependency; member correctly gets 403. Verified in tests."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "Admin 7yg268b5cs@privaterelay.appleid.com / Plantagenet1953!  |  Member member@plantagenetplayers.site / Member123!",
+  "seed_data_creation": "Auto-seeded by backend on startup: 1 admin, 1 demo member, 4 shows (1 current, 2 upcoming, 1 past), 6 lighting fixtures. Tests also created and cleaned up TEST_ prefixed users/shows/fixtures/campaigns.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend test file at /app/backend/tests/backend_test.py covers auth, shows, admin shows CRUD, payments (checkout + status), membership apply, admin (stats/members/tickets/transactions/fixtures/campaigns), authorization. Run with: pytest /app/backend/tests/backend_test.py -v. Stripe checkout is verified up to redirect only (not actual card entry — that requires an interactive Stripe UI which is out of scope for automation).",
+  "rca of the issue": "N/A — no functional bugs found. All identified items are low-priority polish (missing testids on 2 inputs, browser tab title, minor code organization)."
+}

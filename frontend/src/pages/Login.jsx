@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 
-const HERO = "https://images.unsplash.com/photo-1630050525402-06c617847d27?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHw0fHx0aGVhdGVyfGVufDB8fHx8MTc5MDI3NDAzN3ww&ixlib=rb-4.1.0&q=85";
+const HERO = "/venue/slider-1.jpg";
 
 export default function Login() {
   const { login } = useAuth();
@@ -44,7 +44,7 @@ export default function Login() {
       <div className="flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-3 mb-10">
-            <span className="w-10 h-10 rounded-full border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] font-serif">PP</span>
+            <span className="w-11 h-11 rounded-full bg-[#FAF7F2] p-1.5 flex items-center justify-center ring-1 ring-[#D4AF37]/40"><img src="/pp-logo.png" alt="Plantagenet Players" className="w-full h-full object-contain" /></span>
             <span className="font-serif text-lg text-amber-50">Plantagenet Players</span>
           </Link>
           <h1 className="font-serif text-3xl text-amber-50">Sign in</h1>

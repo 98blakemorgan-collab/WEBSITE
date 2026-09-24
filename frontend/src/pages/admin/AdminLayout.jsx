@@ -20,7 +20,7 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-[#0D0A0B] flex">
       <aside className="w-64 shrink-0 border-r border-[#D4AF37]/15 bg-[#0A0708] hidden md:flex flex-col fixed h-full">
         <Link to="/" className="flex items-center gap-3 h-20 px-6 border-b border-[#D4AF37]/15">
-          <span className="w-9 h-9 rounded-full border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] font-serif text-sm">PP</span>
+          <span className="w-9 h-9 rounded-full bg-[#FAF7F2] p-1 flex items-center justify-center ring-1 ring-[#D4AF37]/40"><img src="/pp-logo.png" alt="Plantagenet Players" className="w-full h-full object-contain" /></span>
           <span className="font-serif text-amber-50">Admin</span>
         </Link>
         <nav className="flex-1 p-4 space-y-1">

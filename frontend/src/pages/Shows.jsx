@@ -34,7 +34,7 @@ export default function Shows() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
       <p className="eyebrow mb-4">Take your seat</p>
       <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-amber-50 tracking-tight">What's On</h1>
-      <p className="mt-4 text-amber-50/70 max-w-xl">Local stories, big-hearted performances and a warm welcome at Plantagenet Hall.</p>
+      <p className="mt-4 text-amber-50/70 max-w-xl">Local stories, big-hearted performances and a warm welcome at Plantagenet District Hall.</p>
 
       <div className="mt-10 flex flex-wrap gap-2" data-testid="shows-filters">
         {filters.map((f) => (

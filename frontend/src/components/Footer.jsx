@@ -7,7 +7,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-4">
-            <span className="w-10 h-10 rounded-full border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] font-serif">PP</span>
+            <span className="w-11 h-11 rounded-full bg-[#FAF7F2] p-1.5 flex items-center justify-center ring-1 ring-[#D4AF37]/40"><img src="/pp-logo.png" alt="Plantagenet Players" className="w-full h-full object-contain" /></span>
             <span className="font-serif text-xl text-amber-50">Plantagenet Players</span>
           </div>
           <p className="text-sm text-amber-50/50 max-w-md leading-relaxed">
@@ -34,7 +34,7 @@ export function Footer() {
         <div>
           <h4 className="font-mono text-xs tracking-[0.25em] uppercase text-[#D4AF37]/70 mb-4">Box Office</h4>
           <ul className="space-y-3 text-sm text-amber-50/60">
-            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 text-[#D4AF37]/70" /> Plantagenet Hall,<br />Mount Barker WA 6324</li>
+            <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 text-[#D4AF37]/70" /> Plantagenet District Hall,<br />Memorial Drive, Mount Barker WA 6324</li>
             <li className="flex items-center gap-2"><Mail className="w-4 h-4 text-[#D4AF37]/70" /> boxoffice@plantagenetplayers.site</li>
             <li className="flex items-center gap-2"><Phone className="w-4 h-4 text-[#D4AF37]/70" /> (08) 9851 0000</li>
           </ul>

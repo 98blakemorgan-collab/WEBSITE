@@ -15,13 +15,13 @@ export default function Sponsors() {
 
       <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {sponsors.map((s) => (
-          <div key={s.name} className="p-8 rounded-2xl bg-[#181316] border border-[#D4AF37]/15 text-center flex flex-col items-center justify-center min-h-[180px]" data-testid={`sponsor-${s.name}`}>
-            <div className="w-16 h-16 rounded-full border border-[#D4AF37]/30 flex items-center justify-center font-serif text-2xl text-[#D4AF37] mb-4">
-              {s.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
+          <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="p-6 rounded-2xl bg-[#181316] border border-[#D4AF37]/15 hover:border-[#D4AF37]/40 text-center flex flex-col items-center justify-center min-h-[210px] transition-colors" data-testid={`sponsor-${s.name}`}>
+            <div className="w-full h-24 rounded-lg bg-[#FAF7F2] flex items-center justify-center p-3 mb-4">
+              <img src={s.logo} alt={s.name} className="max-w-full max-h-full object-contain" />
             </div>
-            <p className="font-serif text-lg text-amber-50 leading-tight">{s.name}</p>
+            <p className="font-serif text-base text-amber-50 leading-tight">{s.name}</p>
             <p className="mt-2 text-[10px] font-mono uppercase tracking-widest text-[#D4AF37]/70">{s.tier}</p>
-          </div>
+          </a>
         ))}
       </div>
 

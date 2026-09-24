@@ -25,7 +25,7 @@ export default function Contact() {
         <div className="space-y-6">
           <div className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15 flex items-start gap-4">
             <MapPin className="w-6 h-6 text-[#D4AF37] mt-1" />
-            <div><h3 className="font-serif text-lg text-amber-50">Plantagenet Hall</h3><p className="text-sm text-amber-50/60">Mount Barker WA 6324</p></div>
+            <div><h3 className="font-serif text-lg text-amber-50">Plantagenet District Hall</h3><p className="text-sm text-amber-50/60">Memorial Drive, Mount Barker WA 6324</p></div>
           </div>
           <div className="p-6 rounded-xl bg-[#181316] border border-[#D4AF37]/15 flex items-start gap-4">
             <Mail className="w-6 h-6 text-[#D4AF37] mt-1" />
@@ -56,6 +56,19 @@ export default function Contact() {
           </div>
           <Button type="submit" className="w-full h-12 rounded-full bg-[#8B1E26] hover:bg-[#A6242F] text-amber-50 font-semibold" data-testid="contact-submit">Send Message</Button>
         </form>
+      </div>
+
+      <div className="mt-8 p-8 rounded-2xl bg-[#181316] border border-[#D4AF37]/15" data-testid="venue-facilities">
+        <h2 className="font-serif text-2xl text-amber-50 mb-2">The Venue &amp; Hall Hire</h2>
+        <p className="text-amber-50/65 max-w-3xl leading-relaxed">Plantagenet District Hall on Memorial Drive seats up to 165 with retractable theatre-style seating, an equipped stage with in-house lighting &amp; sound, a full-service kitchen and bar with exterior serving windows, a spacious carpeted foyer and full air-conditioning. It's ideal for productions, receptions, reunions, conferences, community events and weddings.</p>
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[["Capacity", "Up to 165"], ["Seating", "Retractable theatre-style"], ["Stage", "Lighting & sound systems"], ["Kitchen & Bar", "Full-service"]].map(([k, v]) => (
+            <div key={k} className="p-4 rounded-xl bg-[#0D0A0B] border border-[#D4AF37]/15">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-[#D4AF37]/70">{k}</p>
+              <p className="text-sm text-amber-50 mt-1">{v}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

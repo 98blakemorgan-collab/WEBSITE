@@ -10,7 +10,7 @@ export default function OurStory() {
   return (
     <div>
       <div className="relative h-[40vh] min-h-[300px] overflow-hidden grain">
-        <img src="https://images.pexels.com/photos/12092991/pexels-photo-12092991.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" alt="Backstage" className="w-full h-full object-cover" />
+        <img src="/venue/slide-5.jpg" alt="The historic Plantagenet Hall" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0D0A0B] via-[#0D0A0B]/70 to-[#0D0A0B]/30" />
         <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
           <p className="eyebrow mb-2">Our story</p>
@@ -34,6 +34,18 @@ export default function OurStory() {
                 <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-[#8B1E26] border-2 border-[#D4AF37]" />
                 <p className="font-mono text-xs tracking-[0.25em] uppercase text-[#D4AF37]">{t.year}</p>
                 <p className="mt-2 text-amber-50/75 leading-relaxed">{t.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-20">
+          <p className="eyebrow mb-4">Through the years</p>
+          <h2 className="font-serif text-3xl text-amber-50 mb-8">Moments from our productions.</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4" data-testid="story-gallery">
+            {["/venue/slide-8.jpg", "/venue/slide-3.jpg", "/venue/slide-4.jpg", "/venue/slider-2.jpg"].map((src, i) => (
+              <div key={i} className="rounded-xl overflow-hidden border border-[#D4AF37]/15 aspect-[4/3]">
+                <img src={src} alt="Plantagenet Players production" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
               </div>
             ))}
           </div>

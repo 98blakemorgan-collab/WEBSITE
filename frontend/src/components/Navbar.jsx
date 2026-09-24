@@ -26,8 +26,8 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-[#0D0A0B]/85 backdrop-blur-xl border-b border-[#D4AF37]/15">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
         <Link to="/" className="flex items-center gap-3 group" data-testid="nav-logo">
-          <span className="w-10 h-10 rounded-full border border-[#D4AF37]/50 flex items-center justify-center text-[#D4AF37] font-serif text-lg group-hover:bg-[#D4AF37]/10 transition-colors">
-            PP
+          <span className="w-11 h-11 rounded-full bg-[#FAF7F2] p-1.5 flex items-center justify-center ring-1 ring-[#D4AF37]/40 group-hover:ring-[#D4AF37] transition-all">
+            <img src="/pp-logo.png" alt="Plantagenet Players" className="w-full h-full object-contain" />
           </span>
           <span className="leading-tight">
             <span className="block font-serif text-lg text-amber-50 tracking-tight">Plantagenet Players</span>

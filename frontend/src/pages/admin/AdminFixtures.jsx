@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Loader2, Lightbulb, Zap, Clock } from "lucide-react";
 
-const HERO = "https://images.pexels.com/photos/7709689/pexels-photo-7709689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940";
+const HERO = "/venue/slide-8.jpg";
 const empty = { name: "", manufacturer: "", model: "", fixture_type: "Profile", quantity: 1, dmx_address: "", dmx_channels: 1, power_watts: 0, lamp_hours: 0, location: "LX 1", status: "In Service", notes: "" };
 const types = ["Fresnel", "Profile", "PAR", "LED Wash", "Moving Head", "Cyc", "Follow Spot"];
 const locations = ["FOH Bar 1", "FOH Bar 2", "LX 1", "LX 2", "LX 3", "Bridge", "Stage Floor", "Store"];

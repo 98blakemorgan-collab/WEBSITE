@@ -573,10 +573,10 @@ async def root():
 # Seed data
 # ---------------------------------------------------------------------------
 SPONSORS = [
-    {"name": "Great Southern Bank", "tier": "Season Supporter"},
-    {"name": "Mount Barker Co-op", "tier": "Community Partner"},
-    {"name": "Plantagenet Shire Council", "tier": "Production Partner"},
-    {"name": "Great Southern Weekender", "tier": "Local Business"},
+    {"name": "Mount Barker Co-operative", "tier": "Community Partner", "logo": "/venue/coop.jpg", "url": "https://www.mtbarkercoop.com.au/"},
+    {"name": "Shire of Plantagenet", "tier": "Production Partner", "logo": "/venue/shire.jpg", "url": "https://www.plantagenet.wa.gov.au/"},
+    {"name": "Bendigo Bank Mount Barker", "tier": "Season Supporter", "logo": "/venue/bendigo.jpg", "url": "https://www.bendigobank.com.au/public/community/our-branches/mount-barker-wa"},
+    {"name": "Lotterywest", "tier": "Major Grants Partner", "logo": "/venue/lotto.jpg", "url": "https://www.lotterywest.wa.gov.au/"},
 ]
 
 
@@ -673,6 +673,19 @@ async def seed():
             },
         ]
         await db.shows.insert_many(shows)
+
+    # Migration: point seeded shows at real Plantagenet Players photos + real venue
+    poster_map = {
+        "The Great Southern Satire": "/venue/slider-2.jpg",
+        "Mount Barker Melodrama": "/venue/slide-6.jpg",
+        "Spring Variety Show": "/venue/slide-7.jpg",
+        "Blooming Good Show": "/venue/slider-1.jpg",
+    }
+    for title, url in poster_map.items():
+        await db.shows.update_one(
+            {"title": title},
+            {"$set": {"poster_url": url, "venue": "Plantagenet District Hall, Memorial Drive, Mount Barker"}},
+        )
 
     # Lighting fixtures
     if await db.lighting_fixtures.count_documents({}) == 0:

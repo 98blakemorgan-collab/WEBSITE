@@ -4,7 +4,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Ticket, ArrowRight, Drama, Wrench, Users, HandHeart } from "lucide-react";
 
-const HERO = "https://images.unsplash.com/photo-1503095396549-807759245b35?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHx0aGVhdGVyJTIwcGVyZm9ybWFuY2UlMjBzdGFnZSUyMGFjdG9ycyUyMGRyYW1hJTIwc3BvdGxpZ2h0fGVufDB8fHx8MTc5MDI3NDAzN3ww&ixlib=rb-4.1.0&q=85";
+const HERO = "/venue/slide-4.jpg";
 
 const roles = [
   { icon: Drama, title: "On Stage", desc: "Acting, singing, dancing and ensemble roles." },
